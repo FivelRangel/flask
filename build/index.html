@@ -33,28 +33,20 @@
             const fetchPedidos = async () => {
                 try {
                     const response = await fetch('/api/pedidos');
-                    if (response.ok) {
-                        const data = await response.json();
-                        setClientesPedidos(data);
-                    } else {
-                        console.error('Error al obtener los pedidos.');
-                    }
+                    const data = await response.json();
+                    setClientesPedidos(data);
                 } catch (error) {
-                    console.error('Error en fetchPedidos:', error);
+                    console.error('Error al cargar los pedidos:', error);
                 }
             };
 
             const fetchVentasTotales = async () => {
                 try {
                     const response = await fetch('/api/ventas');
-                    if (response.ok) {
-                        const data = await response.json();
-                        setVentasTotales(data.ventasTotales);
-                    } else {
-                        console.error('Error al obtener las ventas totales.');
-                    }
+                    const data = await response.json();
+                    setVentasTotales(data.ventasTotales);
                 } catch (error) {
-                    console.error('Error en fetchVentasTotales:', error);
+                    console.error('Error al cargar las ventas totales:', error);
                 }
             };
 
@@ -73,7 +65,7 @@
                             menu,
                             cantidadPersonas,
                             horaEntrega,
-                            anticipo,
+                            anticipo
                         }),
                     });
                     if (response.ok) {
@@ -94,36 +86,56 @@
             const handleClienteClick = async (id) => {
                 try {
                     const response = await fetch(`/api/clientes/${id}`);
-                    if (response.ok) {
-                        const data = await response.json();
-                        setClienteSeleccionado(data);
-                    } else {
-                        console.error('Error al obtener los detalles del cliente.');
-                    }
+                    const data = await response.json();
+                    setClienteSeleccionado(data);
                 } catch (error) {
-                    console.error('Error en handleClienteClick:', error);
+                    console.error('Error al cargar los detalles del cliente:', error);
                 }
             };
 
+            const generarPDFLista = () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                doc.setFontSize(16);
+                doc.text('Lista de Clientes y Pedidos', 10, 10);
+
+                let y = 20;
+                clientesPedidos.forEach((cp, index) => {
+                    doc.text(`Cliente ${index + 1}: ${cp.cliente.nombre}`, 10, y);
+                    doc.text(`Teléfono: ${cp.cliente.telefono}`, 10, y + 10);
+                    doc.text(`Dirección: ${cp.cliente.direccion}`, 10, y + 20);
+                    doc.text(`Menú: ${cp.pedido.menu}`, 10, y + 30);
+                    doc.text(`Cantidad: ${cp.pedido.cantidad_personas}`, 10, y + 40);
+                    doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, 10, y + 50);
+                    doc.text(`Anticipo: $${cp.pedido.anticipo.toFixed(2)}`, 10, y + 60);
+                    doc.text(`Restante: $${cp.pedido.restante.toFixed(2)}`, 10, y + 70);
+                    y += 80;
+                });
+
+                doc.save('lista_clientes_pedidos.pdf');
+            };
+
             const ClienteDetalle = ({ cliente }) => {
-                if (!cliente) return <p className="text-gray-500">Seleccione un cliente para ver los detalles.</p>;
+                if (!cliente) {
+                    return <p className="text-gray-500 mt-6">Seleccione un cliente para ver los detalles.</p>;
+                }
 
                 return (
                     <div className="bg-white shadow-md rounded-lg p-6 mt-6">
                         <h2 className="text-2xl font-bold text-gray-800 mb-4">Detalles del Cliente</h2>
-                        <p className="text-gray-800"><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
-                        <p className="text-gray-800"><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
-                        <p className="text-gray-800"><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
-                        <h3 className="text-xl font-semibold text-gray-700 mt-4">Pedidos</h3>
+                        <p><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
+                        <p><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
+                        <p><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
+                        <h3 className="text-xl font-semibold mt-4">Pedidos</h3>
                         {cliente.pedidos.map((pedido, index) => (
-                            <div key={index} className="bg-gray-100 p-4 mt-2 rounded-lg">
-                                <p className="text-gray-800"><strong>Menú:</strong> {pedido.menu}</p>
-                                <p className="text-gray-800"><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
-                                <p className="text-gray-800"><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
-                                <p className="text-gray-800"><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
-                                <p className="text-gray-800"><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
-                                <p className="text-gray-800"><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
-                                <p className="text-gray-800"><strong>Estado:</strong> {pedido.estado}</p>
+                            <div key={index} className="bg-gray-100 p-4 rounded-lg mt-2">
+                                <p><strong>Menú:</strong> {pedido.menu}</p>
+                                <p><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
+                                <p><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
+                                <p><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
+                                <p><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
+                                <p><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
+                                <p><strong>Estado:</strong> {pedido.estado}</p>
                             </div>
                         ))}
                     </div>
@@ -133,36 +145,32 @@
             return (
                 <div className="container mx-auto p-4">
                     <h1 className="text-3xl font-bold mb-6">Gestión de Restaurante</h1>
-                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <h2 className="text-2xl font-bold mb-4">Registrar Cliente y Pedido</h2>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <input
-                                type="text"
-                                placeholder="Nombre"
-                                value={nombre}
-                                onChange={(e) => setNombre(e.target.value)}
-                                className="block w-full p-2 border rounded"
-                                required
-                            />
-                            <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Registrar</button>
-                        </form>
-                    </div>
+                    <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4 space-y-4">
+                        <input
+                            type="text"
+                            placeholder="Nombre"
+                            value={nombre}
+                            onChange={(e) => setNombre(e.target.value)}
+                            className="block w-full p-2 border rounded"
+                        />
+                        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded">Registrar</button>
+                    </form>
                     <div>
-                        <table className="min-w-full border-collapse border border-gray-200">
+                        <table className="min-w-full border">
                             <thead>
                                 <tr>
                                     <th>Nombre</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {clientesPedidos.map((cliente, index) => (
+                                {clientesPedidos.map((cp, index) => (
                                     <tr key={index}>
                                         <td>
                                             <button
-                                                onClick={() => handleClienteClick(cliente.cliente.id)}
+                                                onClick={() => handleClienteClick(cp.cliente.id)}
                                                 className="text-blue-500 hover:underline"
                                             >
-                                                {cliente.cliente.nombre}
+                                                {cp.cliente.nombre}
                                             </button>
                                         </td>
                                     </tr>
@@ -171,6 +179,12 @@
                         </table>
                     </div>
                     <ClienteDetalle cliente={clienteSeleccionado} />
+                    <button
+                        onClick={generarPDFLista}
+                        className="mt-6 bg-green-500 text-white px-4 py-2 rounded"
+                    >
+                        Generar PDF Lista
+                    </button>
                 </div>
             );
         }
