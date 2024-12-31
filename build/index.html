@@ -91,16 +91,115 @@
                 }
             };
 
+            const ClienteDetalle = ({ cliente }) => {
+                if (!cliente) return null;
+
+                return (
+                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                        <h2 className="text-2xl font-bold mb-4">Detalles del Cliente</h2>
+                        <p><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
+                        <p><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
+                        <p><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
+                        <h3 className="text-xl font-semibold mt-4">Pedidos:</h3>
+                        {cliente.pedidos.map((pedido, index) => (
+                            <div key={index}>
+                                <p><strong>Menú:</strong> {pedido.menu}</p>
+                                <p><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
+                                <p><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
+                                <p><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
+                                <p><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
+                                <p><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
+                                <p><strong>Estado:</strong> {pedido.estado}</p>
+                            </div>
+                        ))}
+                    </div>
+                );
+            };
+
             return (
                 <div className="container mx-auto p-4">
-                    <h1>Gestión Restaurante</h1>
-                    <form onSubmit={handleSubmit}>
-                        {/* Formulario */}
-                    </form>
-                    <div>
-                        {clientesPedidos.map(pedido => (
-                            <div>{pedido.pedido.id}</div>
-                        ))}
+                    <h1 className="text-3xl font-bold mb-6">Gestión de Restaurante</h1>
+                    
+                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                        <h2 className="text-2xl font-bold mb-4">Registrar Cliente y Pedido</h2>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">Nombre</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="nombre" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telefono">Teléfono</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="telefono" type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="direccion">Dirección</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="direccion" type="text" value={direccion} onChange={(e) => setDireccion(e.target.value)} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Menú</label>
+                                <select className="shadow border rounded w-full py-2 px-3" id="menu" value={menu} onChange={(e) => setMenu(e.target.value)}>
+                                    <option value="Menú 1">Menú 1</option>
+                                    <option value="Menú 2">Menú 2</option>
+                                    <option value="Menú 3">Menú 3</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadPersonas">Cantidad de Personas</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="cantidadPersonas" type="number" min="1" value={cantidadPersonas} onChange={(e) => setCantidadPersonas(Number(e.target.value))} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="horaEntrega">Hora de Entrega</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="horaEntrega" type="time" value={horaEntrega} onChange={(e) => setHoraEntrega(e.target.value)} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="anticipo">Anticipo</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="anticipo" type="number" min="0" value={anticipo} onChange={(e) => setAnticipo(Number(e.target.value))} />
+                            </div>
+                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none" type="submit">Registrar</button>
+                        </form>
+                    </div>
+
+                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                        <h2 className="text-2xl font-bold mb-4">Lista de Clientes y Pedidos</h2>
+                        <table className="min-w-full">
+                            <thead>
+                                <tr>
+                                    <th className="px-4 py-2">Nombre</th>
+                                    <th className="px-4 py-2">Teléfono</th>
+                                    <th className="px-4 py-2">Dirección</th>
+                                    <th className="px-4 py-2">Menú</th>
+                                    <th className="px-4 py-2">Cantidad</th>
+                                    <th className="px-4 py-2">Total</th>
+                                    <th className="px-4 py-2">Anticipo</th>
+                                    <th className="px-4 py-2">Restante</th>
+                                    <th className="px-4 py-2">Hora de Entrega</th>
+                                    <th className="px-4 py-2">Estado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {clientesPedidos.map((cp, index) => (
+                                    <tr key={index} onClick={() => handleClienteClick(cp.cliente.id)} className="cursor-pointer hover:bg-gray-100">
+                                        <td className="border px-4 py-2">{cp.cliente.nombre}</td>
+                                        <td className="border px-4 py-2">{cp.cliente.telefono}</td>
+                                        <td className="border px-4 py-2">{cp.cliente.direccion}</td>
+                                        <td className="border px-4 py-2">{cp.pedido.menu}</td>
+                                        <td className="border px-4 py-2">{cp.pedido.cantidad_personas}</td>
+                                        <td className="border px-4 py-2">${cp.pedido.total.toFixed(2)}</td>
+                                        <td className="border px-4 py-2">${cp.pedido.anticipo.toFixed(2)}</td>
+                                        <td className="border px-4 py-2">${cp.pedido.restante.toFixed(2)}</td>
+                                        <td className="border px-4 py-2">{cp.pedido.hora_entrega}</td>
+                                        <td className="border px-4 py-2">{cp.pedido.estado}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <ClienteDetalle cliente={clienteSeleccionado} />
+
+                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                        <h2 className="text-2xl font-bold mb-4">Ventas Totales</h2>
+                        <p className="text-3xl font-bold">${ventasTotales.toFixed(2)}</p>
                     </div>
                 </div>
             );
