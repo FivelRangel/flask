@@ -91,30 +91,42 @@
                 }
             };
 
-            const ClienteDetalle = ({ cliente }) => {
-                if (!cliente) return null;
+const ClienteDetalle = ({ cliente }) => {
+    if (!cliente) return null;
 
-                return (
-                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <h2 className="text-2xl font-bold mb-4">Detalles del Cliente</h2>
-                        <p><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
-                        <p><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
-                        <p><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
-                        <h3 className="text-xl font-semibold mt-4">Pedidos:</h3>
-                        {cliente.pedidos.map((pedido, index) => (
-                            <div key={index}>
-                                <p><strong>Menú:</strong> {pedido.menu}</p>
-                                <p><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
-                                <p><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
-                                <p><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
-                                <p><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
-                                <p><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
-                                <p><strong>Estado:</strong> {pedido.estado}</p>
-                            </div>
-                        ))}
-                    </div>
-                );
-            };
+    return (
+        <div className="bg-white shadow-md rounded-lg p-6 mb-8 flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
+            {/* Información del Cliente (Izquierda) */}
+            <div className="w-full lg:w-1/2">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Información del Cliente</h2>
+                <div className="space-y-4">
+                    <p className="text-gray-800"><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
+                    <p className="text-gray-800"><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
+                    <p className="text-gray-800"><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
+                </div>
+            </div>
+
+            {/* Pedidos del Cliente (Derecha) */}
+            <div className="w-full lg:w-1/2">
+                <h2 className="text-2xl font-bold text-gray-800 mb-4">Pedidos</h2>
+                <div className="space-y-6">
+                    {cliente.pedidos.map((pedido, index) => (
+                        <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
+                            <p className="text-gray-800"><strong>Menú:</strong> {pedido.menu}</p>
+                            <p className="text-gray-800"><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
+                            <p className="text-gray-800"><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
+                            <p className="text-gray-800"><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
+                            <p className="text-gray-800"><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
+                            <p className="text-gray-800"><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
+                            <p className="text-gray-800"><strong>Estado:</strong> {pedido.estado}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 
             return (
                 <div className="container mx-auto p-4">
