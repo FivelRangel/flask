@@ -178,7 +178,7 @@
                             </thead>
                             <tbody>
                                 {clientesPedidos.map((cp, index) => (
-                                    <tr key={index} onClick={() => handleClienteClick(cp.cliente.id)} className="cursor-pointer hover:bg-gray-100">
+                                    <tr key={index} className="hover:bg-gray-100">
                                         <td className="border px-4 py-2">{cp.cliente.nombre}</td>
                                         <td className="border px-4 py-2">{cp.cliente.telefono}</td>
                                         <td className="border px-4 py-2">{cp.cliente.direccion}</td>
@@ -188,7 +188,16 @@
                                         <td className="border px-4 py-2">${cp.pedido.anticipo.toFixed(2)}</td>
                                         <td className="border px-4 py-2">${cp.pedido.restante.toFixed(2)}</td>
                                         <td className="border px-4 py-2">{cp.pedido.hora_entrega}</td>
-                                        <td className="border px-4 py-2">{cp.pedido.estado}</td>
+                                        <td className="border px-4 py-2">
+                                            <select
+                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                                                value={cp.pedido.estado}
+                                                onChange={(e) => handleChangeEstado(cp.pedido.id, e.target.value)}
+                                            >
+                                                <option value="Por entregar">Por entregar</option>
+                                                <option value="Entregado">Entregado</option>
+                                            </select>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
