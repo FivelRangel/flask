@@ -71,6 +71,21 @@
                 }
             };
 
+            const handleClienteClick = async (id) => {
+    try {
+        const response = await fetch(`/api/clientes/${id}`);
+        if (response.ok) {
+            const data = await response.json();
+            setClienteSeleccionado(data);
+            console.log("Cliente seleccionado:", data); // Para depuración
+        } else {
+            console.error("Error al obtener los detalles del cliente");
+        }
+    } catch (error) {
+        console.error("Error de conexión:", error);
+    }
+};
+
                       
                         const ClienteDetalle = ({ cliente }) => {
                 if (!cliente) return null;
