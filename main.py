@@ -22,6 +22,9 @@ class Pedido(db.Model):
     cantidad_personas = db.Column(db.Integer, nullable=False)
     total = db.Column(db.Float, nullable=False)
     estado = db.Column(db.String(20), default='Por entregar')
+    hora_entrega = db.Column(db.String(50), nullable=False)
+    anticipo = db.Column(db.Float, default=0.0, nullable=False)
+    restante = db.Column(db.Float, nullable=False)
 
 # Precios de los menús
 PRECIOS_MENU = {
@@ -36,55 +39,62 @@ ventas_totales = 0
 @app.route('/api/clientes', methods=['POST'])
 def registrar_cliente_y_pedido():
     data = request.json
-    
+
     nuevo_cliente = Cliente(
         nombre=data['nombre'],
         telefono=data['telefono'],
         direccion=data['direccion']
     )
-    
+
     db.session.add(nuevo_cliente)
     db.session.commit()
-    
+
     total = PRECIOS_MENU[data['menu']] * data['cantidadPersonas']
-    
+    anticipo = data.get('anticipo', 0)  # Si no se envía anticipo, se asume 0
+    restante = 0 if anticipo == 0 else total - anticipo
+
     nuevo_pedido = Pedido(
         cliente_id=nuevo_cliente.id,
         menu=data['menu'],
         cantidad_personas=data['cantidadPersonas'],
-        total=total
+        total=total,
+        hora_entrega=data['horaEntrega'],
+        anticipo=anticipo,
+        restante=restante
     )
-    
+
     db.session.add(nuevo_pedido)
     db.session.commit()
-    
+
     return jsonify({
         "message": "Cliente y pedido registrados",
-        "total": total
+        "total": total,
+        "anticipo": anticipo,
+        "restante": restante
     }), 201
 
 @app.route('/api/pedidos/<int:id>', methods=['PATCH'])
 def cambiar_estado_pedido(id):
     pedido = Pedido.query.get_or_404(id)
     data = request.json
-    
+
     if data['estado'] not in ['Por entregar', 'Entregado']:
         return jsonify({"error": "Estado no válido"}), 400
-    
+
     if pedido.estado != 'Entregado' and data['estado'] == 'Entregado':
         global ventas_totales
         ventas_totales += pedido.total
-    
+
     pedido.estado = data['estado']
     db.session.commit()
-    
+
     return jsonify({"message": "Estado actualizado"}), 200
 
 @app.route('/api/pedidos', methods=['GET'])
 def obtener_clientes_y_pedidos():
     pedidos = Pedido.query.all()
     resultado = []
-    
+
     for pedido in pedidos:
         resultado.append({
             "cliente": {
@@ -98,32 +108,14 @@ def obtener_clientes_y_pedidos():
                 "menu": pedido.menu,
                 "cantidad_personas": pedido.cantidad_personas,
                 "total": pedido.total,
-                "estado": pedido.estado
+                "estado": pedido.estado,
+                "hora_entrega": pedido.hora_entrega,
+                "anticipo": pedido.anticipo,
+                "restante": pedido.restante
             }
         })
-    
-    return jsonify(resultado), 200
 
-@app.route('/api/clientes/<int:id>', methods=['GET'])
-def obtener_cliente(id):
-    cliente = Cliente.query.get_or_404(id)
-    pedidos = Pedido.query.filter_by(cliente_id=id).all()
-    
-    return jsonify({
-        "cliente": {
-            "id": cliente.id,
-            "nombre": cliente.nombre,
-            "telefono": cliente.telefono,
-            "direccion": cliente.direccion
-        },
-        "pedidos": [{
-            "id": pedido.id,
-            "menu": pedido.menu,
-            "cantidad_personas": pedido.cantidad_personas,
-            "total": pedido.total,
-            "estado": pedido.estado
-        } for pedido in pedidos]
-    }), 200
+    return jsonify(resultado), 200
 
 @app.route('/api/ventas', methods=['GET'])
 def calcular_ventas_totales():
@@ -142,4 +134,3 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()
     app.run(debug=True)
-
