@@ -72,7 +72,7 @@
             };
  const handleClienteClick = async (id) => {
                 try {
-                    const response = await fetch(`/api/clientes/${id}`);
+                    const response = await fetch(/api/clientes/${id});
                     if (response.ok) {
                         const data = await response.json();
                         setClienteSeleccionado(data);
@@ -132,25 +132,25 @@
                     // Cliente
                     doc.setFontSize(12);
                     doc.setFont('helvetica', 'bold');
-                    doc.text(`Cliente ${index + 1}:`, margin, y);
+                    doc.text(Cliente ${index + 1}:, margin, y);
                     y += 6;
                     doc.setFont('helvetica', 'normal');
-                    doc.text(`Nombre: ${cp.cliente.nombre}`, margin, y);
-                    doc.text(`Teléfono: ${cp.cliente.telefono}`, margin + 70, y);
+                    doc.text(Nombre: ${cp.cliente.nombre}, margin, y);
+                    doc.text(Teléfono: ${cp.cliente.telefono}, margin + 70, y);
                     y += 6;
-                    doc.text(`Dirección: ${cp.cliente.direccion}`, margin, y);
+                    doc.text(Dirección: ${cp.cliente.direccion}, margin, y);
                     y += 10;
 
                     // Pedido
-                    doc.text(`Menú: ${cp.pedido.menu}`, margin, y);
-                    doc.text(`Cantidad: ${cp.pedido.cantidad_personas}`, margin + 50, y);
-                    doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin + 100, y);
+                    doc.text(Menú: ${cp.pedido.menu}, margin, y);
+                    doc.text(Cantidad: ${cp.pedido.cantidad_personas}, margin + 50, y);
+                    doc.text(Total: $${cp.pedido.total.toFixed(2)}, margin + 100, y);
                     y += 6;
-                    doc.text(`Anticipo: $${cp.pedido.anticipo.toFixed(2)}`, margin, y);
-                    doc.text(`Restante: $${cp.pedido.restante.toFixed(2)}`, margin + 50, y);
+                    doc.text(Anticipo: $${cp.pedido.anticipo.toFixed(2)}, margin, y);
+                    doc.text(Restante: $${cp.pedido.restante.toFixed(2)}, margin + 50, y);
                     y += 6;
-                    doc.text(`Hora de Entrega: ${cp.pedido.hora_entrega}`, margin, y);
-                    doc.text(`Estado: ${cp.pedido.estado}`, margin + 70, y);
+                    doc.text(Hora de Entrega: ${cp.pedido.hora_entrega}, margin, y);
+                    doc.text(Estado: ${cp.pedido.estado}, margin + 70, y);
                     y += 10;
 
                     doc.setDrawColor(200, 200, 200);
@@ -273,19 +273,6 @@
                             </button>
                         </div>
                     </div>
-
-
-
-            {/* Botón para generar PDF */}
-            <button
-                className="bg-green-500 text-white font-bold py-2 px-4 rounded mt-6 hover:bg-green-700 transition-all"
-                onClick={generarPDFDetalle}
-            >
-                Generar PDF de Detalles
-            </button>
-        </div>
-    );
-};
 
                     {clienteSeleccionado && <ClienteDetalle cliente={clienteSeleccionado} />}
 
