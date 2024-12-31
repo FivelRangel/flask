@@ -50,7 +50,7 @@ def registrar_cliente_y_pedido():
     db.session.commit()
 
     total = PRECIOS_MENU[data['menu']] * data['cantidadPersonas']
-    anticipo = data.get('anticipo', 0)  # Si no se envía anticipo, se asume 0
+    anticipo = data.get('anticipo', 0)
     restante = 0 if anticipo == 0 else total - anticipo
 
     nuevo_pedido = Pedido(
@@ -116,6 +116,30 @@ def obtener_clientes_y_pedidos():
         })
 
     return jsonify(resultado), 200
+
+@app.route('/api/clientes/<int:id>', methods=['GET'])
+def obtener_cliente(id):
+    cliente = Cliente.query.get_or_404(id)
+    pedidos = Pedido.query.filter_by(cliente_id=id).all()
+
+    return jsonify({
+        "cliente": {
+            "id": cliente.id,
+            "nombre": cliente.nombre,
+            "telefono": cliente.telefono,
+            "direccion": cliente.direccion
+        },
+        "pedidos": [ {
+            "id": pedido.id,
+            "menu": pedido.menu,
+            "cantidad_personas": pedido.cantidad_personas,
+            "total": pedido.total,
+            "estado": pedido.estado,
+            "hora_entrega": pedido.hora_entrega,
+            "anticipo": pedido.anticipo,
+            "restante": pedido.restante
+        } for pedido in pedidos]
+    }), 200
 
 @app.route('/api/ventas', methods=['GET'])
 def calcular_ventas_totales():
