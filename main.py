@@ -141,6 +141,30 @@ def obtener_cliente(id):
         } for pedido in pedidos]
     }), 200
 
+@app.route('/api/clientes/<int:id>', methods=['PUT'])
+def actualizar_cliente_y_pedidos(id):
+    cliente = Cliente.query.get_or_404(id)
+    data = request.json
+
+    # Actualizar datos del cliente
+    cliente.nombre = data.get('nombre', cliente.nombre)
+    cliente.telefono = data.get('telefono', cliente.telefono)
+    cliente.direccion = data.get('direccion', cliente.direccion)
+
+    # Actualizar pedidos
+    for pedido_data in data.get('pedidos', []):
+        pedido = Pedido.query.get_or_404(pedido_data['id'])
+        pedido.menu = pedido_data.get('menu', pedido.menu)
+        pedido.cantidad_personas = pedido_data.get('cantidad_personas', pedido.cantidad_personas)
+        pedido.total = pedido_data.get('total', pedido.total)
+        pedido.anticipo = pedido_data.get('anticipo', pedido.anticipo)
+        pedido.restante = pedido_data.get('restante', pedido.restante)
+        pedido.hora_entrega = pedido_data.get('hora_entrega', pedido.hora_entrega)
+        pedido.estado = pedido_data.get('estado', pedido.estado)
+
+    db.session.commit()
+    return jsonify({"message": "Cliente y pedidos actualizados correctamente"}), 200
+
 @app.route('/api/ventas', methods=['GET'])
 def calcular_ventas_totales():
     return jsonify({"ventasTotales": ventas_totales}), 200
