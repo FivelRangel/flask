@@ -95,35 +95,84 @@
 const ClienteDetalle = ({ cliente }) => {
     if (!cliente) return null;
 
-    const generarPDF = () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+const generarPDF = () => {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
 
-        // Título
-        doc.setFontSize(16);
-        doc.text("Detalles del Cliente", 10, 10);
+    // Estilo general de la "card"
+    const cardX = 10;
+    const cardY = 10;
+    const cardWidth = 190;
+    const cardHeight = 0; // Calcularemos dinámicamente el alto basado en el contenido
+    let contentHeight = cardY + 20;
 
-        // Información del Cliente
+    // Dibujar fondo para la "card"
+    doc.setFillColor(240, 248, 255); // Azul claro
+    doc.roundedRect(cardX, cardY, cardWidth, contentHeight, 5, 5, "F");
+
+    // Título principal
+    doc.setFontSize(18);
+    doc.setTextColor(40, 40, 40);
+    doc.text("Detalles del Cliente", cardX + 10, contentHeight);
+    contentHeight += 10;
+
+    // Información del Cliente
+    doc.setFontSize(12);
+    doc.setTextColor(60, 60, 60);
+    doc.text(`Nombre: ${cliente.cliente.nombre}`, cardX + 10, contentHeight);
+    contentHeight += 8;
+    doc.text(`Teléfono: ${cliente.cliente.telefono}`, cardX + 10, contentHeight);
+    contentHeight += 8;
+    doc.text(`Dirección: ${cliente.cliente.direccion}`, cardX + 10, contentHeight);
+    contentHeight += 12;
+
+    // Línea separadora
+    doc.setDrawColor(200, 200, 200);
+    doc.line(cardX + 10, contentHeight, cardX + cardWidth - 10, contentHeight);
+    contentHeight += 10;
+
+    // Pedidos del Cliente
+    doc.setFontSize(14);
+    doc.setTextColor(40, 40, 40);
+    doc.text("Pedidos", cardX + 10, contentHeight);
+    contentHeight += 10;
+
+    cliente.pedidos.forEach((pedido, index) => {
         doc.setFontSize(12);
-        doc.text(`Nombre: ${cliente.cliente.nombre}`, 10, 20);
-        doc.text(`Teléfono: ${cliente.cliente.telefono}`, 10, 30);
-        doc.text(`Dirección: ${cliente.cliente.direccion}`, 10, 40);
+        doc.setTextColor(60, 60, 60);
+        doc.text(`Pedido ${index + 1}:`, cardX + 10, contentHeight);
+        contentHeight += 8;
+        doc.text(`Menú: ${pedido.menu}`, cardX + 15, contentHeight);
+        contentHeight += 8;
+        doc.text(`Cantidad: ${pedido.cantidad_personas}`, cardX + 15, contentHeight);
+        contentHeight += 8;
+        doc.text(`Total: $${pedido.total.toFixed(2)}`, cardX + 15, contentHeight);
+        contentHeight += 8;
+        doc.text(`Anticipo: $${pedido.anticipo.toFixed(2)}`, cardX + 15, contentHeight);
+        contentHeight += 8;
+        doc.text(`Restante: $${pedido.restante.toFixed(2)}`, cardX + 15, contentHeight);
+        contentHeight += 8;
+        doc.text(`Hora de Entrega: ${pedido.hora_entrega}`, cardX + 15, contentHeight);
+        contentHeight += 8;
+        doc.text(`Estado: ${pedido.estado}`, cardX + 15, contentHeight);
+        contentHeight += 12;
 
-        // Espacio antes de Pedidos
-        doc.text("Pedidos:", 10, 50);
+        // Línea separadora entre pedidos
+        if (index < cliente.pedidos.length - 1) {
+            doc.setDrawColor(220, 220, 220);
+            doc.line(cardX + 10, contentHeight, cardX + cardWidth - 10, contentHeight);
+            contentHeight += 10;
+        }
+    });
 
-        // Información de los Pedidos
-        cliente.pedidos.forEach((pedido, index) => {
-            const offsetY = 60 + index * 40; // Espaciado dinámico por cada pedido
-            doc.text(`Pedido ${index + 1}`, 10, offsetY);
-            doc.text(`Menú: ${pedido.menu}`, 20, offsetY + 10);
-            doc.text(`Cantidad: ${pedido.cantidad_personas}`, 20, offsetY + 20);
-            doc.text(`Total: $${pedido.total.toFixed(2)}`, 20, offsetY + 30);
-            doc.text(`Anticipo: $${pedido.anticipo.toFixed(2)}`, 20, offsetY + 40);
-            doc.text(`Restante: $${pedido.restante.toFixed(2)}`, 20, offsetY + 50);
-            doc.text(`Hora de Entrega: ${pedido.hora_entrega}`, 20, offsetY + 60);
-            doc.text(`Estado: ${pedido.estado}`, 20, offsetY + 70);
-        });
+    // Ajustar altura dinámica de la "card"
+    doc.setFillColor(240, 248, 255);
+    doc.roundedRect(cardX, cardY, cardWidth, contentHeight - cardY, 5, 5, "FD");
+
+    // Guardar PDF
+    doc.save(`${cliente.cliente.nombre}_detalles.pdf`);
+};
+
 
         // Guardar PDF
         doc.save(`${cliente.cliente.nombre}_detalles.pdf`);
