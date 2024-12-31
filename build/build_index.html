@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos Restaurante</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pedidos Restaurante</h1>
+    
+    <form id="form-pedido">
+        <h2>Registrar Cliente y Pedido</h2>
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required>
+        
+        <label for="telefono">Teléfono:</label>
+        <input type="text" id="telefono" name="telefono" required>
+        
+        <label for="direccion">Dirección:</label>
+        <input type="text" id="direccion" name="direccion" required>
+        
+        <label for="menu">Menú:</label>
+        <select id="menu" name="menu" required>
+            <option value="Menu 1">Menú 1</option>
+            <option value="Menu 2">Menú 2</option>
+            <option value="Menu 3">Menú 3</option>
+        </select>
+        
+        <label for="cantidadPersonas">Cantidad de Personas:</label>
+        <input type="number" id="cantidadPersonas" name="cantidadPersonas" min="1" required>
+        
+        <button type="submit">Guardar</button>
+    </form>
+    
+    <h2>Lista de Pedidos</h2>
+    <button id="btn-obtener-pedidos">Ver Pedidos</button>
+    <table id="tabla-pedidos">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Teléfono</th>
+                <th>Dirección</th>
+                <th>Menú</th>
+                <th>Cantidad</th>
+                <th>Total</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+    
+    <h2>Ventas Totales</h2>
+    <button id="btn-ventas-totales">Ver Ventas Totales</button>
+    <p id="ventas-totales"></p>
+    
+    <script>
+        document.getElementById("form-pedido").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            
+            const nombre = document.getElementById("nombre").value;
+            const telefono = document.getElementById("telefono").value;
+            const direccion = document.getElementById("direccion").value;
+            const menu = document.getElementById("menu").value;
+            const cantidadPersonas = parseInt(document.getElementById("cantidadPersonas").value);
+            
+            try {
+                const response = await fetch("/api/clientes", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        nombre,
+                        telefono,
+                        direccion,
+                        menu,
+                        cantidadPersonas,
+                    }),
+                });
+                
+                const result = await response.json();
+                if (response.ok) {
+                    alert("Cliente y pedido registrados correctamente.");
+                } else {
+                    alert("Error al registrar el pedido: " + result.error);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error al conectar con el servidor.");
+            }
+        });
+        
+        document.getElementById("btn-obtener-pedidos").addEventListener("click", async function () {
+            try {
+                const response = await fetch("/api/pedidos");
+                const pedidos = await response.json();
+                const tbody = document.getElementById("tabla-pedidos").querySelector("tbody");
+                tbody.innerHTML = ""; // Limpia la tabla
+                
+                pedidos.forEach(pedido => {
+                    const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${pedido.cliente.nombre}</td>
+                        <td>${pedido.cliente.telefono}</td>
+                        <td>${pedido.cliente.direccion}</td>
+                        <td>${pedido.pedido.menu}</td>
+                        <td>${pedido.pedido.cantidad_personas}</td>
+                        <td>${pedido.pedido.total}</td>
+                        <td>${pedido.pedido.estado}</td>
+                    `;
+                    tbody.appendChild(row);
+                });
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error al obtener los pedidos.");
+            }
+        });
+        
+        document.getElementById("btn-ventas-totales").addEventListener("click", async function () {
+            try {
+                const response = await fetch("/api/ventas");
+                const ventas = await response.json();
+                document.getElementById("ventas-totales").textContent = `Ventas Totales: $${ventas.ventasTotales}`;
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Error al obtener las ventas totales.");
+            }
+        });
+    </script>
+</body>
+</html>
