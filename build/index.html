@@ -335,15 +335,31 @@
                             </button>
                         </div>
 
-                        <div className="mt-6">
-                            <button
-                                className="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-all"
-                                onClick={}
-                            >
-                                Borrar Lista
-                            </button>
-                        </div>
-                    </div>
+         <div className="mt-6">
+    <button
+        className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-all"
+        onClick={async () => {
+            try {
+                const response = await fetch('/api/borrar_todo', {
+                    method: 'DELETE',
+                });
+                if (response.ok) {
+                    alert("Todos los registros han sido eliminados correctamente.");
+                    // Opcional: Refrescar la lista después de borrar
+                    fetchPedidos();
+                } else {
+                    const errorData = await response.json();
+                    alert(`Error al eliminar registros: ${errorData.error}`);
+                }
+            } catch (error) {
+                console.error("Error al conectar con la API:", error);
+                alert("Error al conectar con la API.");
+            }
+        }}
+    >
+        Borrar Lista
+    </button>
+</div>
 
                           {clienteSeleccionado && <ClienteDetalle cliente={clienteSeleccionado} />}
 
