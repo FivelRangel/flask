@@ -178,6 +178,21 @@ def serve(path):
     else:
         return send_from_directory(app.static_folder, 'index.html')
 
+# Ruta para borrar todos los registros
+@app.route('/api/borrar_todo', methods=['DELETE'])
+def borrar_todo():
+    try:
+        # Borra todos los pedidos
+        Pedido.query.delete()
+        # Borra todos los clientes
+        Cliente.query.delete()
+        # Confirma los cambios
+        db.session.commit()
+        return jsonify({"mensaje": "Todos los registros han sido eliminados correctamente"}), 200
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500
+
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
