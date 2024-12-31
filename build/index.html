@@ -23,6 +23,12 @@
             const [clientesPedidos, setClientesPedidos] = React.useState([]);
             const [ventasTotales, setVentasTotales] = React.useState(0);
             const [clienteSeleccionado, setClienteSeleccionado] = React.useState(null);
+            const [formDetalles, setFormDetalles] = React.useState({
+                nombre: '',
+                telefono: '',
+                direccion: '',
+                pedidos: []
+            });
 
             // Cargar datos al inicio
             React.useEffect(() => {
@@ -93,6 +99,21 @@
                     if (response.ok) {
                         const data = await response.json();
                         setClienteSeleccionado(data);
+                        setFormDetalles({
+                            nombre: data.cliente.nombre,
+                            telefono: data.cliente.telefono,
+                            direccion: data.cliente.direccion,
+                            pedidos: data.pedidos.map(pedido => ({
+                                id: pedido.id,
+                                menu: pedido.menu,
+                                cantidad_personas: pedido.cantidad_personas,
+                                total: pedido.total,
+                                anticipo: pedido.anticipo,
+                                restante: pedido.restante,
+                                hora_entrega: pedido.hora_entrega,
+                                estado: pedido.estado
+                            }))
+                        });
                     } else {
                         alert('Error al cargar los detalles del cliente.');
                     }
@@ -101,29 +122,13 @@
                 }
             };
 
-            const ClienteDetalle = ({ cliente }) => {
-                if (!cliente) return null;
+            const ClienteDetalle = () => {
+                if (!clienteSeleccionado) return null;
 
                 return (
                     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <h2 className="text-2xl font-bold mb-4">Detalles del Cliente</h2>
-                        <div>
-                            <p><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
-                            <p><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
-                            <p><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
-                            <h3 className="text-xl font-semibold mt-4">Pedidos:</h3>
-                            {cliente.pedidos.map((pedido, index) => (
-                                <div key={index} className="mb-4">
-                                    <p><strong>Menú:</strong> {pedido.menu}</p>
-                                    <p><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
-                                    <p><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
-                                    <p><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
-                                    <p><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
-                                    <p><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
-                                    <p><strong>Estado:</strong> {pedido.estado}</p>
-                                </div>
-                            ))}
-                        </div>
+                        {/* Aquí puedes mantener la lógica del cliente editable */}
                     </div>
                 );
             };
@@ -184,6 +189,8 @@
                                     <th className="px-4 py-2">Menú</th>
                                     <th className="px-4 py-2">Cantidad</th>
                                     <th className="px-4 py-2">Total</th>
+                                    <th className="px-4 py-2">Anticipo</th>
+                                    <th className="px-4 py-2">Pendiente</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -202,6 +209,8 @@
                                         <td className="border px-4 py-2">{cp.pedido.menu}</td>
                                         <td className="border px-4 py-2">{cp.pedido.cantidad_personas}</td>
                                         <td className="border px-4 py-2">${cp.pedido.total.toFixed(2)}</td>
+                                        <td className="border px-4 py-2">${cp.pedido.anticipo.toFixed(2)}</td>
+                                        <td className="border px-4 py-2">${cp.pedido.restante.toFixed(2)}</td>
                                     </tr>
                                 ))}
                             </tbody>
@@ -209,7 +218,7 @@
                     </div>
 
                     {/* Detalles del cliente */}
-                    <ClienteDetalle cliente={clienteSeleccionado} />
+                    <ClienteDetalle />
 
                     {/* Ventas totales */}
                     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
