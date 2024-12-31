@@ -70,9 +70,10 @@
                     fetchPedidos();
                 }
             };
- const handleClienteClick = async (id) => {
+
+            const handleClienteClick = async (id) => {
                 try {
-                    const response = await fetch(/api/clientes/${id});
+                    const response = await fetch(`/api/clientes/${id}`);
                     if (response.ok) {
                         const data = await response.json();
                         setClienteSeleccionado(data);
@@ -87,6 +88,59 @@
 
             const ClienteDetalle = ({ cliente }) => {
                 if (!cliente) return null;
+
+                const generarPDFDetalles = () => {
+                    const { jsPDF } = window.jspdf;
+                    const doc = new jsPDF();
+                    const margin = 10;
+                    let y = 20;
+
+                    // Título
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(18);
+                    doc.text(`Detalles del Cliente`, 105, y, { align: 'center' });
+                    y += 10;
+
+                    // Cliente
+                    doc.setFontSize(12);
+                    doc.setFont('helvetica', 'normal');
+                    doc.text(`Nombre: ${cliente.cliente.nombre}`, margin, y);
+                    y += 6;
+                    doc.text(`Teléfono: ${cliente.cliente.telefono}`, margin, y);
+                    y += 6;
+                    doc.text(`Dirección: ${cliente.cliente.direccion}`, margin, y);
+                    y += 10;
+
+                    // Pedidos
+                    doc.setFont('helvetica', 'bold');
+                    doc.text(`Pedidos:`, margin, y);
+                    y += 6;
+
+                    cliente.pedidos.forEach((pedido, index) => {
+                        if (y > 270) {
+                            doc.addPage();
+                            y = 20;
+                        }
+                        doc.setFont('helvetica', 'normal');
+                        doc.text(`Menú: ${pedido.menu}`, margin, y);
+                        doc.text(`Cantidad: ${pedido.cantidad_personas}`, margin + 70, y);
+                        y += 6;
+                        doc.text(`Total: $${pedido.total.toFixed(2)}`, margin, y);
+                        doc.text(`Anticipo: $${pedido.anticipo.toFixed(2)}`, margin + 70, y);
+                        y += 6;
+                        doc.text(`Restante: $${pedido.restante.toFixed(2)}`, margin, y);
+                        y += 6;
+                        doc.text(`Hora de Entrega: ${pedido.hora_entrega}`, margin, y);
+                        doc.text(`Estado: ${pedido.estado}`, margin + 70, y);
+                        y += 10;
+
+                        doc.setDrawColor(200, 200, 200);
+                        doc.line(margin, y, 200, y);
+                        y += 6;
+                    });
+
+                    doc.save('detalles_cliente.pdf');
+                };
 
                 return (
                     <div className="bg-white shadow-md rounded-lg p-6 mt-6">
@@ -106,6 +160,12 @@
                                 <p><strong>Estado:</strong> {pedido.estado}</p>
                             </div>
                         ))}
+                        <button
+                            className="bg-blue-500 text-white font-bold py-2 px-4 rounded mt-4"
+                            onClick={generarPDFDetalles}
+                        >
+                            Generar PDF Detalles
+                        </button>
                     </div>
                 );
             };
@@ -114,9 +174,8 @@
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 const margin = 10;
-                let y = 20; // Posición vertical inicial
+                let y = 20;
 
-                // Título del PDF
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(18);
                 doc.text('Lista de Clientes y Pedidos', 105, y, { align: 'center' });
@@ -126,36 +185,17 @@
                 clientesPedidos.forEach((cp, index) => {
                     if (y > 270) {
                         doc.addPage();
-                        y = 20; // Reset posición en la nueva página
+                        y = 20;
                     }
-
-                    // Cliente
                     doc.setFontSize(12);
-                    doc.setFont('helvetica', 'bold');
-                    doc.text(Cliente ${index + 1}:, margin, y);
-                    y += 6;
                     doc.setFont('helvetica', 'normal');
-                    doc.text(Nombre: ${cp.cliente.nombre}, margin, y);
-                    doc.text(Teléfono: ${cp.cliente.telefono}, margin + 70, y);
+                    doc.text(`Nombre: ${cp.cliente.nombre}`, margin, y);
+                    doc.text(`Teléfono: ${cp.cliente.telefono}`, margin + 70, y);
                     y += 6;
-                    doc.text(Dirección: ${cp.cliente.direccion}, margin, y);
+                    doc.text(`Dirección: ${cp.cliente.direccion}`, margin, y);
+                    y += 6;
+                    doc.text(`Menú: ${cp.pedido.menu}`, margin, y);
                     y += 10;
-
-                    // Pedido
-                    doc.text(Menú: ${cp.pedido.menu}, margin, y);
-                    doc.text(Cantidad: ${cp.pedido.cantidad_personas}, margin + 50, y);
-                    doc.text(Total: $${cp.pedido.total.toFixed(2)}, margin + 100, y);
-                    y += 6;
-                    doc.text(Anticipo: $${cp.pedido.anticipo.toFixed(2)}, margin, y);
-                    doc.text(Restante: $${cp.pedido.restante.toFixed(2)}, margin + 50, y);
-                    y += 6;
-                    doc.text(Hora de Entrega: ${cp.pedido.hora_entrega}, margin, y);
-                    doc.text(Estado: ${cp.pedido.estado}, margin + 70, y);
-                    y += 10;
-
-                    doc.setDrawColor(200, 200, 200);
-                    doc.line(margin, y, 200, y); // Línea divisoria
-                    y += 6;
                 });
 
                 doc.save('lista_clientes_pedidos.pdf');
@@ -164,123 +204,13 @@
             return (
                 <div className="container mx-auto p-4">
                     <h1 className="text-3xl font-bold mb-6">Gestión de Restaurante</h1>
-                    
-                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <h2 className="text-2xl font-bold mb-4">Registrar Cliente y Pedido</h2>
-                        <form onSubmit={handleSubmit} className="space-y-4">
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">Nombre</label>
-                                <input className="shadow border rounded w-full py-2 px-3" id="nombre" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telefono">Teléfono</label>
-                                <input className="shadow border rounded w-full py-2 px-3" id="telefono" type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="direccion">Dirección</label>
-                                <input className="shadow border rounded w-full py-2 px-3" id="direccion" type="text" value={direccion} onChange={(e) => setDireccion(e.target.value)} required />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Menú</label>
-                                <select className="shadow border rounded w-full py-2 px-3" id="menu" value={menu} onChange={(e) => setMenu(e.target.value)}>
-                                    <option value="Menú 1">Menú 1</option>
-                                    <option value="Menú 2">Menú 2</option>
-                                    <option value="Menú 3">Menú 3</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadPersonas">Cantidad de Personas</label>
-                                <input className="shadow border rounded w-full py-2 px-3" id="cantidadPersonas" type="number" min="1" value={cantidadPersonas} onChange={(e) => setCantidadPersonas(Number(e.target.value))} required />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="horaEntrega">Hora de Entrega</label>
-                                <input className="shadow border rounded w-full py-2 px-3" id="horaEntrega" type="time" value={horaEntrega} onChange={(e) => setHoraEntrega(e.target.value)} required />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="anticipo">Anticipo</label>
-                                <input className="shadow border rounded w-full py-2 px-3" id="anticipo" type="number" min="0" value={anticipo} onChange={(e) => setAnticipo(Number(e.target.value))} />
-                            </div>
-                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none" type="submit">Registrar</button>
-                        </form>
-                    </div>
-
-                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <h2 className="text-2xl font-bold mb-4">Lista de Clientes y Pedidos</h2>
-                        <table className="min-w-full">
-                            <thead>
-                                <tr>
-                                    <th className="px-4 py-2">Nombre</th>
-                                    <th className="px-4 py-2">Teléfono</th>
-                                    <th className="px-4 py-2">Dirección</th>
-                                    <th className="px-4 py-2">Menú</th>
-                                    <th className="px-4 py-2">Cantidad</th>
-                                    <th className="px-4 py-2">Total</th>
-                                    <th className="px-4 py-2">Anticipo</th>
-                                    <th className="px-4 py-2">Restante</th>
-                                    <th className="px-4 py-2">Hora de Entrega</th>
-                                    <th className="px-4 py-2">Estado</th>
-                                    <th className="px-4 py-2">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {clientesPedidos.map((cp, index) => (
-                                    <tr key={index} className="hover:bg-gray-100">
-                                        <td className="border px-4 py-2">
-                                            <button
-                                                onClick={() => handleClienteClick(cp.cliente.id)}
-                                                className="text-blue-500 hover:underline"
-                                            >
-                                                {cp.cliente.nombre}
-                                            </button>
-                                        </td>
-                                        <td className="border px-4 py-2">{cp.cliente.telefono}</td>
-                                        <td className="border px-4 py-2">{cp.cliente.direccion}</td>
-                                        <td className="border px-4 py-2">{cp.pedido.menu}</td>
-                                        <td className="border px-4 py-2">{cp.pedido.cantidad_personas}</td>
-                                        <td className="border px-4 py-2">${cp.pedido.total.toFixed(2)}</td>
-                                        <td className="border px-4 py-2">${cp.pedido.anticipo.toFixed(2)}</td>
-                                        <td className="border px-4 py-2">${cp.pedido.restante.toFixed(2)}</td>
-                                        <td className="border px-4 py-2">{cp.pedido.hora_entrega}</td>
-                                        <td className="border px-4 py-2">
-                                            <select
-                                                className="shadow border rounded w-full py-2 px-3"
-                                                value={cp.pedido.estado}
-                                                onChange={(e) => handleChangeEstado(cp.pedido.id, e.target.value)}
-                                            >
-                                                <option value="Por entregar">Por entregar</option>
-                                                <option value="Entregado">Entregado</option>
-                                            </select>
-                                        </td>
-                                        <td className="border px-4 py-2">
-                                            <button
-                                            className="bg-blue-500 text-white px-4 py-2 rounded"
-                                           onClick={() => handleClienteClick(cp.cliente.id)}
-                                            > Ver Detalles
-                                            </button>
-                                        </td>    
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-
-                        {/* Botón para generar PDF */}
-                        <div className="mt-6">
-                            <button
-                                className="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition-all"
-                                onClick={generarPDFLista}
-                            >
-                                Generar PDF Lista
-                            </button>
-                        </div>
-                    </div>
-
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <label>Nombre:</label>
+                        <input type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+                        <button type="submit">Registrar</button>
+                    </form>
+                    <button onClick={generarPDFLista}>Generar PDF Lista</button>
                     {clienteSeleccionado && <ClienteDetalle cliente={clienteSeleccionado} />}
-
-
-                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <h2 className="text-2xl font-bold mb-4">Ventas Totales</h2>
-                        <p className="text-3xl font-bold">${ventasTotales.toFixed(2)}</p>
-                    </div>
                 </div>
             );
         }
