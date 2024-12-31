@@ -13,6 +13,13 @@
     <div id="root"></div>
     <script type="text/babel">
         function App() {
+            const [nombre, setNombre] = React.useState('');
+            const [telefono, setTelefono] = React.useState('');
+            const [direccion, setDireccion] = React.useState('');
+            const [menu, setMenu] = React.useState('Menú 1');
+            const [cantidadPersonas, setCantidadPersonas] = React.useState(1);
+            const [horaEntrega, setHoraEntrega] = React.useState('');
+            const [anticipo, setAnticipo] = React.useState(0);
             const [clientesPedidos, setClientesPedidos] = React.useState([]);
             const [ventasTotales, setVentasTotales] = React.useState(0);
             const [clienteSeleccionado, setClienteSeleccionado] = React.useState(null);
@@ -40,6 +47,43 @@
                     setVentasTotales(data.ventasTotales);
                 } catch (error) {
                     console.error('Error al cargar las ventas totales:', error);
+                }
+            };
+
+            const handleSubmit = async (e) => {
+                e.preventDefault();
+                try {
+                    const response = await fetch('/api/clientes', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            nombre,
+                            telefono,
+                            direccion,
+                            menu,
+                            cantidadPersonas,
+                            horaEntrega,
+                            anticipo
+                        }),
+                    });
+                    if (response.ok) {
+                        setNombre('');
+                        setTelefono('');
+                        setDireccion('');
+                        setMenu('Menú 1');
+                        setCantidadPersonas(1);
+                        setHoraEntrega('');
+                        setAnticipo(0);
+                        fetchPedidos();
+                        fetchVentasTotales();
+                        alert('Cliente y pedido registrados con éxito');
+                    } else {
+                        alert('Error al registrar cliente y pedido');
+                    }
+                } catch (error) {
+                    console.error('Error al registrar cliente y pedido:', error);
                 }
             };
 
@@ -87,7 +131,48 @@
             return (
                 <div className="container mx-auto p-4">
                     <h1 className="text-3xl font-bold mb-6">Gestión de Restaurante</h1>
-                    
+
+                    {/* Sección para agregar clientes */}
+                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                        <h2 className="text-2xl font-bold mb-4">Registrar Cliente y Pedido</h2>
+                        <form onSubmit={handleSubmit} className="space-y-4">
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">Nombre</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="nombre" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telefono">Teléfono</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="telefono" type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="direccion">Dirección</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="direccion" type="text" value={direccion} onChange={(e) => setDireccion(e.target.value)} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Menú</label>
+                                <select className="shadow border rounded w-full py-2 px-3" id="menu" value={menu} onChange={(e) => setMenu(e.target.value)}>
+                                    <option value="Menú 1">Menú 1</option>
+                                    <option value="Menú 2">Menú 2</option>
+                                    <option value="Menú 3">Menú 3</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadPersonas">Cantidad de Personas</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="cantidadPersonas" type="number" min="1" value={cantidadPersonas} onChange={(e) => setCantidadPersonas(Number(e.target.value))} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="horaEntrega">Hora de Entrega</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="horaEntrega" type="time" value={horaEntrega} onChange={(e) => setHoraEntrega(e.target.value)} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="anticipo">Anticipo</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="anticipo" type="number" min="0" value={anticipo} onChange={(e) => setAnticipo(Number(e.target.value))} />
+                            </div>
+                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none" type="submit">Registrar</button>
+                        </form>
+                    </div>
+
+                    {/* Sección de lista de clientes */}
                     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <h2 className="text-2xl font-bold mb-4">Lista de Clientes y Pedidos</h2>
                         <table className="min-w-full">
@@ -123,8 +208,10 @@
                         </table>
                     </div>
 
+                    {/* Detalles del cliente */}
                     <ClienteDetalle cliente={clienteSeleccionado} />
 
+                    {/* Ventas totales */}
                     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <h2 className="text-2xl font-bold mb-4">Ventas Totales</h2>
                         <p className="text-3xl font-bold">${ventasTotales.toFixed(2)}</p>
