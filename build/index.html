@@ -70,7 +70,7 @@
                     fetchPedidos();
                 }
             };
-             const handleClienteClick = async (id) => {
+ const handleClienteClick = async (id) => {
                 try {
                     const response = await fetch(`/api/clientes/${id}`);
                     if (response.ok) {
@@ -84,7 +84,8 @@
                     console.error("Error de conexión:", error);
                 }
             };
-                        const ClienteDetalle = ({ cliente }) => {
+
+            const ClienteDetalle = ({ cliente }) => {
                 if (!cliente) return null;
 
                 return (
