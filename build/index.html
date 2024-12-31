@@ -6,7 +6,6 @@
     <title>Gestión de Restaurante</title>
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
@@ -92,136 +91,30 @@
                 }
             };
 
-const ClienteDetalle = ({ cliente }) => {
-    if (!cliente) return null;
+            const ClienteDetalle = ({ cliente }) => {
+                if (!cliente) return null;
 
-const generarPDF = () => {
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
-
-    // Estilo general de la "card"
-    const cardX = 10;
-    const cardY = 10;
-    const cardWidth = 190;
-    const cardHeight = 0; // Calcularemos dinámicamente el alto basado en el contenido
-    let contentHeight = cardY + 20;
-
-    // Dibujar fondo para la "card"
-    doc.setFillColor(240, 248, 255); // Azul claro
-    doc.roundedRect(cardX, cardY, cardWidth, contentHeight, 5, 5, "F");
-
-    // Título principal
-    doc.setFontSize(18);
-    doc.setTextColor(40, 40, 40);
-    doc.text("Detalles del Cliente", cardX + 10, contentHeight);
-    contentHeight += 10;
-
-    // Información del Cliente
-    doc.setFontSize(12);
-    doc.setTextColor(60, 60, 60);
-    doc.text(`Nombre: ${cliente.cliente.nombre}`, cardX + 10, contentHeight);
-    contentHeight += 8;
-    doc.text(`Teléfono: ${cliente.cliente.telefono}`, cardX + 10, contentHeight);
-    contentHeight += 8;
-    doc.text(`Dirección: ${cliente.cliente.direccion}`, cardX + 10, contentHeight);
-    contentHeight += 12;
-
-    // Línea separadora
-    doc.setDrawColor(200, 200, 200);
-    doc.line(cardX + 10, contentHeight, cardX + cardWidth - 10, contentHeight);
-    contentHeight += 10;
-
-    // Pedidos del Cliente
-    doc.setFontSize(14);
-    doc.setTextColor(40, 40, 40);
-    doc.text("Pedidos", cardX + 10, contentHeight);
-    contentHeight += 10;
-
-    cliente.pedidos.forEach((pedido, index) => {
-        doc.setFontSize(12);
-        doc.setTextColor(60, 60, 60);
-        doc.text(`Pedido ${index + 1}:`, cardX + 10, contentHeight);
-        contentHeight += 8;
-        doc.text(`Menú: ${pedido.menu}`, cardX + 15, contentHeight);
-        contentHeight += 8;
-        doc.text(`Cantidad: ${pedido.cantidad_personas}`, cardX + 15, contentHeight);
-        contentHeight += 8;
-        doc.text(`Total: $${pedido.total.toFixed(2)}`, cardX + 15, contentHeight);
-        contentHeight += 8;
-        doc.text(`Anticipo: $${pedido.anticipo.toFixed(2)}`, cardX + 15, contentHeight);
-        contentHeight += 8;
-        doc.text(`Restante: $${pedido.restante.toFixed(2)}`, cardX + 15, contentHeight);
-        contentHeight += 8;
-        doc.text(`Hora de Entrega: ${pedido.hora_entrega}`, cardX + 15, contentHeight);
-        contentHeight += 8;
-        doc.text(`Estado: ${pedido.estado}`, cardX + 15, contentHeight);
-        contentHeight += 12;
-
-        // Línea separadora entre pedidos
-        if (index < cliente.pedidos.length - 1) {
-            doc.setDrawColor(220, 220, 220);
-            doc.line(cardX + 10, contentHeight, cardX + cardWidth - 10, contentHeight);
-            contentHeight += 10;
-        }
-    });
-
-    // Ajustar altura dinámica de la "card"
-    doc.setFillColor(240, 248, 255);
-    doc.roundedRect(cardX, cardY, cardWidth, contentHeight - cardY, 5, 5, "FD");
-
-    // Guardar PDF
-    doc.save(`${cliente.cliente.nombre}_detalles.pdf`);
-};
-
-
-        // Guardar PDF
-        doc.save(`${cliente.cliente.nombre}_detalles.pdf`);
-    };
-
-    return (
-        <div className="bg-white shadow-md rounded-lg p-6 mb-8 flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
-            {/* Información del Cliente (Izquierda) */}
-            <div className="w-full lg:w-1/2">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Información del Cliente</h2>
-                <div className="space-y-4">
-                    <p className="text-gray-800"><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
-                    <p className="text-gray-800"><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
-                    <p className="text-gray-800"><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
-                </div>
-
-                {/* Botón para generar PDF */}
-                <div className="mt-6">
-                    <button
-                        className="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition-all"
-                        onClick={generarPDF}
-                    >
-                        Generar PDF
-                    </button>
-                </div>
-            </div>
-
-            {/* Pedidos del Cliente (Derecha) */}
-            <div className="w-full lg:w-1/2">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Pedidos</h2>
-                <div className="space-y-6">
-                    {cliente.pedidos.map((pedido, index) => (
-                        <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
-                            <p className="text-gray-800"><strong>Menú:</strong> {pedido.menu}</p>
-                            <p className="text-gray-800"><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
-                            <p className="text-gray-800"><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
-                            <p className="text-gray-800"><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
-                            <p className="text-gray-800"><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
-                            <p className="text-gray-800"><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
-                            <p className="text-gray-800"><strong>Estado:</strong> {pedido.estado}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-};
-
-
+                return (
+                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+                        <h2 className="text-2xl font-bold mb-4">Detalles del Cliente</h2>
+                        <p><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
+                        <p><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
+                        <p><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
+                        <h3 className="text-xl font-semibold mt-4">Pedidos:</h3>
+                        {cliente.pedidos.map((pedido, index) => (
+                            <div key={index}>
+                                <p><strong>Menú:</strong> {pedido.menu}</p>
+                                <p><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
+                                <p><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
+                                <p><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
+                                <p><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
+                                <p><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
+                                <p><strong>Estado:</strong> {pedido.estado}</p>
+                            </div>
+                        ))}
+                    </div>
+                );
+            };
 
             return (
                 <div className="container mx-auto p-4">
@@ -332,3 +225,6 @@ const generarPDF = () => {
     </script>
 </body>
 </html>
+
+
+Acomoda los detalles del cliente en una interfaz bonita
