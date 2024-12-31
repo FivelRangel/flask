@@ -6,7 +6,6 @@
     <title>Gestión de Restaurante</title>
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
-
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -93,86 +92,49 @@
                 }
             };
 
-const ClienteDetalle = ({ cliente }) => {
-    if (!cliente) return null;
+            const generarPDFLista = () => {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
 
-    const generarPDF = () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
+                const pageWidth = doc.internal.pageSize.getWidth();
+                const margin = 10;
 
-        // Título
-        doc.setFontSize(16);
-        doc.text("Detalles del Cliente", 10, 10);
+                // Título del PDF
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(18);
+                doc.text('Lista de Clientes y Pedidos', pageWidth / 2, margin + 10, { align: 'center' });
 
-        // Información del Cliente
-        doc.setFontSize(12);
-        doc.text(`Nombre: ${cliente.cliente.nombre}`, 10, 20);
-        doc.text(`Teléfono: ${cliente.cliente.telefono}`, 10, 30);
-        doc.text(`Dirección: ${cliente.cliente.direccion}`, 10, 40);
+                // Encabezados de tabla
+                let y = margin + 20;
+                doc.setFontSize(12);
+                doc.setFont('helvetica', 'bold');
+                doc.text('Nombre', margin, y);
+                doc.text('Teléfono', margin + 40, y);
+                doc.text('Menú', margin + 80, y);
+                doc.text('Cantidad', margin + 110, y);
+                doc.text('Total', margin + 140, y);
+                doc.text('Estado', margin + 170, y);
 
-        // Espacio antes de Pedidos
-        doc.text("Pedidos:", 10, 50);
+                y += 10;
 
-        // Información de los Pedidos
-        cliente.pedidos.forEach((pedido, index) => {
-            const offsetY = 60 + index * 40; // Espaciado dinámico por cada pedido
-            doc.text(`Pedido ${index + 1}`, 10, offsetY);
-            doc.text(`Menú: ${pedido.menu}`, 20, offsetY + 10);
-            doc.text(`Cantidad: ${pedido.cantidad_personas}`, 20, offsetY + 20);
-            doc.text(`Total: $${pedido.total.toFixed(2)}`, 20, offsetY + 30);
-            doc.text(`Anticipo: $${pedido.anticipo.toFixed(2)}`, 20, offsetY + 40);
-            doc.text(`Restante: $${pedido.restante.toFixed(2)}`, 20, offsetY + 50);
-            doc.text(`Hora de Entrega: ${pedido.hora_entrega}`, 20, offsetY + 60);
-            doc.text(`Estado: ${pedido.estado}`, 20, offsetY + 70);
-        });
+                // Datos de los clientes y pedidos
+                doc.setFont('helvetica', 'normal');
+                clientesPedidos.forEach((cp, index) => {
+                    if (y > 270) {
+                        doc.addPage();
+                        y = margin + 10;
+                    }
+                    doc.text(cp.cliente.nombre, margin, y);
+                    doc.text(cp.cliente.telefono, margin + 40, y);
+                    doc.text(cp.pedido.menu, margin + 80, y);
+                    doc.text(cp.pedido.cantidad_personas.toString(), margin + 110, y);
+                    doc.text(`$${cp.pedido.total.toFixed(2)}`, margin + 140, y);
+                    doc.text(cp.pedido.estado, margin + 170, y);
+                    y += 10;
+                });
 
-        // Guardar PDF
-        doc.save(`${cliente.cliente.nombre}_detalles.pdf`);
-    };
-
-    return (
-        <div className="bg-white shadow-md rounded-lg p-6 mb-8 flex flex-col lg:flex-row space-y-6 lg:space-y-0 lg:space-x-6">
-            {/* Información del Cliente (Izquierda) */}
-            <div className="w-full lg:w-1/2">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Información del Cliente</h2>
-                <div className="space-y-4">
-                    <p className="text-gray-800"><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
-                    <p className="text-gray-800"><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
-                    <p className="text-gray-800"><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
-                </div>
-
-                {/* Botón para generar PDF */}
-                <div className="mt-6">
-                    <button
-                        className="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition-all"
-                        onClick={generarPDF}
-                    >
-                        Generar PDF
-                    </button>
-                </div>
-            </div>
-
-            {/* Pedidos del Cliente (Derecha) */}
-            <div className="w-full lg:w-1/2">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Pedidos</h2>
-                <div className="space-y-6">
-                    {cliente.pedidos.map((pedido, index) => (
-                        <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
-                            <p className="text-gray-800"><strong>Menú:</strong> {pedido.menu}</p>
-                            <p className="text-gray-800"><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
-                            <p className="text-gray-800"><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
-                            <p className="text-gray-800"><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
-                            <p className="text-gray-800"><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
-                            <p className="text-gray-800"><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
-                            <p className="text-gray-800"><strong>Estado:</strong> {pedido.estado}</p>
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-    );
-};
-
+                doc.save('Lista_Clientes_Pedidos.pdf');
+            };
 
             return (
                 <div className="container mx-auto p-4">
@@ -240,49 +202,4 @@ const ClienteDetalle = ({ cliente }) => {
                                         <td className="border px-4 py-2">
                                             <button
                                                 onClick={() => handleClienteClick(cp.cliente.id)}
-                                                className="text-blue-500 hover:underline"
-                                            >
-                                                {cp.cliente.nombre}
-                                            </button>
-                                        </td>
-                                        <td className="border px-4 py-2">{cp.cliente.telefono}</td>
-                                        <td className="border px-4 py-2">{cp.cliente.direccion}</td>
-                                        <td className="border px-4 py-2">{cp.pedido.menu}</td>
-                                        <td className="border px-4 py-2">{cp.pedido.cantidad_personas}</td>
-                                        <td className="border px-4 py-2">${cp.pedido.total.toFixed(2)}</td>
-                                        <td className="border px-4 py-2">${cp.pedido.anticipo.toFixed(2)}</td>
-                                        <td className="border px-4 py-2">${cp.pedido.restante.toFixed(2)}</td>
-                                        <td className="border px-4 py-2">{cp.pedido.hora_entrega}</td>
-                                        <td className="border px-4 py-2">
-                                            <select
-                                                className="shadow border rounded w-full py-2 px-3"
-                                                value={cp.pedido.estado}
-                                                onChange={(e) => handleChangeEstado(cp.pedido.id, e.target.value)}
-                                            >
-                                                <option value="Por entregar">Por entregar</option>
-                                                <option value="Entregado">Entregado</option>
-                                            </select>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <ClienteDetalle cliente={clienteSeleccionado} />
-
-                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <h2 className="text-2xl font-bold mb-4">Ventas Totales</h2>
-                        <p className="text-3xl font-bold">${ventasTotales.toFixed(2)}</p>
-                    </div>
-                </div>
-            );
-        }
-
-        ReactDOM.render(<App />, document.getElementById('root'));
-    </script>
-</body>
-</html>
-
-
-Acomoda los detalles del cliente en una interfaz bonita
+                               
