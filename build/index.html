@@ -16,191 +16,69 @@
             const [clientesPedidos, setClientesPedidos] = React.useState([]);
             const [ventasTotales, setVentasTotales] = React.useState(0);
             const [clienteSeleccionado, setClienteSeleccionado] = React.useState(null);
-            const [formDetalles, setFormDetalles] = React.useState({
-                nombre: '',
-                telefono: '',
-                direccion: '',
-                pedidos: []
-            });
 
+            // Cargar datos al inicio
             React.useEffect(() => {
                 fetchPedidos();
                 fetchVentasTotales();
             }, []);
 
             const fetchPedidos = async () => {
-                const response = await fetch('/api/pedidos');
-                const data = await response.json();
-                setClientesPedidos(data);
+                try {
+                    const response = await fetch('/api/pedidos');
+                    const data = await response.json();
+                    setClientesPedidos(data);
+                } catch (error) {
+                    console.error('Error al cargar los pedidos:', error);
+                }
             };
 
             const fetchVentasTotales = async () => {
-                const response = await fetch('/api/ventas');
-                const data = await response.json();
-                setVentasTotales(data.ventasTotales);
+                try {
+                    const response = await fetch('/api/ventas');
+                    const data = await response.json();
+                    setVentasTotales(data.ventasTotales);
+                } catch (error) {
+                    console.error('Error al cargar las ventas totales:', error);
+                }
             };
 
             const handleClienteClick = async (id) => {
-                const response = await fetch(`/api/clientes/${id}`);
-                if (response.ok) {
-                    const data = await response.json();
-                    setClienteSeleccionado(data);
-                    setFormDetalles({
-                        nombre: data.cliente.nombre,
-                        telefono: data.cliente.telefono,
-                        direccion: data.cliente.direccion,
-                        pedidos: data.pedidos.map(pedido => ({
-                            id: pedido.id,
-                            menu: pedido.menu,
-                            cantidad_personas: pedido.cantidad_personas,
-                            total: pedido.total,
-                            anticipo: pedido.anticipo,
-                            restante: pedido.restante,
-                            hora_entrega: pedido.hora_entrega,
-                            estado: pedido.estado
-                        }))
-                    });
+                try {
+                    const response = await fetch(`/api/clientes/${id}`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        setClienteSeleccionado(data);
+                    } else {
+                        alert('Error al cargar los detalles del cliente.');
+                    }
+                } catch (error) {
+                    console.error('Error al cargar los detalles del cliente:', error);
                 }
             };
 
-            const handleDetalleChange = (field, value) => {
-                setFormDetalles(prevState => ({
-                    ...prevState,
-                    [field]: value
-                }));
-            };
-
-            const handlePedidoChange = (index, field, value) => {
-                const updatedPedidos = [...formDetalles.pedidos];
-                updatedPedidos[index][field] = value;
-                setFormDetalles(prevState => ({
-                    ...prevState,
-                    pedidos: updatedPedidos
-                }));
-            };
-
-            const handleActualizar = async () => {
-                const response = await fetch(`/api/clientes/${clienteSeleccionado.cliente.id}`, {
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(formDetalles)
-                });
-                if (response.ok) {
-                    alert('Detalles actualizados correctamente');
-                    fetchPedidos();
-                } else {
-                    alert('Error al actualizar los detalles');
-                }
-            };
-
-            const ClienteDetalle = () => {
-                if (!clienteSeleccionado) return null;
+            const ClienteDetalle = ({ cliente }) => {
+                if (!cliente) return null;
 
                 return (
                     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <h2 className="text-2xl font-bold mb-4">Detalles del Cliente</h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Nombre:</label>
-                                <input
-                                    className="shadow border rounded w-full py-2 px-3"
-                                    value={formDetalles.nombre}
-                                    onChange={(e) => handleDetalleChange('nombre', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Teléfono:</label>
-                                <input
-                                    className="shadow border rounded w-full py-2 px-3"
-                                    value={formDetalles.telefono}
-                                    onChange={(e) => handleDetalleChange('telefono', e.target.value)}
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2">Dirección:</label>
-                                <input
-                                    className="shadow border rounded w-full py-2 px-3"
-                                    value={formDetalles.direccion}
-                                    onChange={(e) => handleDetalleChange('direccion', e.target.value)}
-                                />
-                            </div>
+                        <div>
+                            <p><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
+                            <p><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
+                            <p><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
                             <h3 className="text-xl font-semibold mt-4">Pedidos:</h3>
-                            {formDetalles.pedidos.map((pedido, index) => (
-                                <div key={index} className="space-y-2">
-                                    <div>
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Menú:</label>
-                                        <input
-                                            className="shadow border rounded w-full py-2 px-3"
-                                            value={pedido.menu}
-                                            onChange={(e) => handlePedidoChange(index, 'menu', e.target.value)}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Cantidad:</label>
-                                        <input
-                                            type="number"
-                                            className="shadow border rounded w-full py-2 px-3"
-                                            value={pedido.cantidad_personas}
-                                            onChange={(e) => handlePedidoChange(index, 'cantidad_personas', Number(e.target.value))}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Total:</label>
-                                        <input
-                                            type="number"
-                                            className="shadow border rounded w-full py-2 px-3"
-                                            value={pedido.total}
-                                            onChange={(e) => handlePedidoChange(index, 'total', Number(e.target.value))}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Anticipo:</label>
-                                        <input
-                                            type="number"
-                                            className="shadow border rounded w-full py-2 px-3"
-                                            value={pedido.anticipo}
-                                            onChange={(e) => handlePedidoChange(index, 'anticipo', Number(e.target.value))}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Restante:</label>
-                                        <input
-                                            type="number"
-                                            className="shadow border rounded w-full py-2 px-3"
-                                            value={pedido.restante}
-                                            onChange={(e) => handlePedidoChange(index, 'restante', Number(e.target.value))}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Hora de Entrega:</label>
-                                        <input
-                                            type="time"
-                                            className="shadow border rounded w-full py-2 px-3"
-                                            value={pedido.hora_entrega}
-                                            onChange={(e) => handlePedidoChange(index, 'hora_entrega', e.target.value)}
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-gray-700 text-sm font-bold mb-2">Estado:</label>
-                                        <select
-                                            className="shadow border rounded w-full py-2 px-3"
-                                            value={pedido.estado}
-                                            onChange={(e) => handlePedidoChange(index, 'estado', e.target.value)}
-                                        >
-                                            <option value="Por entregar">Por entregar</option>
-                                            <option value="Entregado">Entregado</option>
-                                        </select>
-                                    </div>
+                            {cliente.pedidos.map((pedido, index) => (
+                                <div key={index} className="mb-4">
+                                    <p><strong>Menú:</strong> {pedido.menu}</p>
+                                    <p><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
+                                    <p><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
+                                    <p><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
+                                    <p><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
+                                    <p><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
+                                    <p><strong>Estado:</strong> {pedido.estado}</p>
                                 </div>
                             ))}
-                            <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-4"
-                                onClick={handleActualizar}
-                            >
-                                Actualizar Detalles
-                            </button>
                         </div>
                     </div>
                 );
@@ -245,7 +123,7 @@
                         </table>
                     </div>
 
-                    <ClienteDetalle />
+                    <ClienteDetalle cliente={clienteSeleccionado} />
 
                     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <h2 className="text-2xl font-bold mb-4">Ventas Totales</h2>
