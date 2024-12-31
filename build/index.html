@@ -8,7 +8,6 @@
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_MAPS_API_KEY"></script>
 </head>
 <body>
     <div id="root"></div>
@@ -19,9 +18,10 @@
             const [direccion, setDireccion] = React.useState('');
             const [menu, setMenu] = React.useState('Menú 1');
             const [cantidadPersonas, setCantidadPersonas] = React.useState(1);
+            const [horaEntrega, setHoraEntrega] = React.useState('');
+            const [anticipo, setAnticipo] = React.useState(0);
             const [clientesPedidos, setClientesPedidos] = React.useState([]);
             const [ventasTotales, setVentasTotales] = React.useState(0);
-            const [clienteSeleccionado, setClienteSeleccionado] = React.useState(null);
 
             React.useEffect(() => {
                 fetchPedidos();
@@ -53,6 +53,8 @@
                         direccion,
                         menu,
                         cantidadPersonas: Number(cantidadPersonas),
+                        horaEntrega,
+                        anticipo: Number(anticipo)
                     }),
                 });
                 if (response.ok) {
@@ -61,82 +63,11 @@
                     setDireccion('');
                     setMenu('Menú 1');
                     setCantidadPersonas(1);
+                    setHoraEntrega('');
+                    setAnticipo(0);
                     fetchPedidos();
                     fetchVentasTotales();
                 }
-            };
-
-            const handleChangeEstado = async (id, nuevoEstado) => {
-                const response = await fetch(`/api/pedidos/${id}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ estado: nuevoEstado }),
-                });
-                if (response.ok) {
-                    fetchPedidos();
-                    fetchVentasTotales();
-                }
-            };
-
-            const handleClienteClick = async (clienteId) => {
-                const response = await fetch(`/api/clientes/${clienteId}`);
-                const data = await response.json();
-                setClienteSeleccionado(data);
-            };
-
-            const ClienteDetalle = ({ cliente }) => {
-                const mapRef = React.useRef(null);
-
-                React.useEffect(() => {
-                    if (cliente && mapRef.current) {
-                        const geocoder = new google.maps.Geocoder();
-                        geocoder.geocode({ address: cliente.cliente.direccion }, (results, status) => {
-                            if (status === 'OK') {
-                                const map = new google.maps.Map(mapRef.current, {
-                                    center: results[0].geometry.location,
-                                    zoom: 15
-                                });
-                                new google.maps.Marker({
-                                    map: map,
-                                    position: results[0].geometry.location
-                                });
-                            }
-                        });
-                    }
-                }, [cliente]);
-
-                if (!cliente) return null;
-
-                return (
-                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <h2 className="text-2xl font-bold mb-4">Detalles del Cliente</h2>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <h3 className="text-xl font-semibold mb-2">Información del Cliente</h3>
-                                <p><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
-                                <p><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
-                                <p><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
-                            </div>
-                            <div>
-                                <h3 className="text-xl font-semibold mb-2">Pedidos</h3>
-                                {cliente.pedidos.map((pedido, index) => (
-                                    <div key={index} className="mb-2">
-                                        <p><strong>Menú:</strong> {pedido.menu}</p>
-                                        <p><strong>Cantidad de Personas:</strong> {pedido.cantidad_personas}</p>
-                                        <p><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
-                                        <p><strong>Estado:</strong> {pedido.estado}</p>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="mt-4">
-                            <h3 className="text-xl font-semibold mb-2">Ubicación</h3>
-                            <div ref={mapRef} style={{ width: '100%', height: '300px' }}></div>
-                        </div>
-                    </div>
-                );
             };
 
             return (
@@ -147,79 +78,38 @@
                         <h2 className="text-2xl font-bold mb-4">Registrar Cliente y Pedido</h2>
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">
-                                    Nombre
-                                </label>
-                                <input
-                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                    id="nombre"
-                                    type="text"
-                                    value={nombre}
-                                    onChange={(e) => setNombre(e.target.value)}
-                                    required
-                                />
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="nombre">Nombre</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="nombre" type="text" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
                             </div>
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telefono">
-                                    Teléfono
-                                </label>
-                                <input
-                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                    id="telefono"
-                                    type="tel"
-                                    value={telefono}
-                                    onChange={(e) => setTelefono(e.target.value)}
-                                    required
-                                />
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="telefono">Teléfono</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="telefono" type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
                             </div>
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="direccion">
-                                    Dirección
-                                </label>
-                                <input
-                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                    id="direccion"
-                                    type="text"
-                                    value={direccion}
-                                    onChange={(e) => setDireccion(e.target.value)}
-                                    required
-                                />
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="direccion">Dirección</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="direccion" type="text" value={direccion} onChange={(e) => setDireccion(e.target.value)} required />
                             </div>
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">
-                                    Menú
-                                </label>
-                                <select
-                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                    id="menu"
-                                    value={menu}
-                                    onChange={(e) => setMenu(e.target.value)}
-                                >
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Menú</label>
+                                <select className="shadow border rounded w-full py-2 px-3" id="menu" value={menu} onChange={(e) => setMenu(e.target.value)}>
                                     <option value="Menú 1">Menú 1</option>
                                     <option value="Menú 2">Menú 2</option>
                                     <option value="Menú 3">Menú 3</option>
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadPersonas">
-                                    Cantidad de Personas
-                                </label>
-                                <input
-                                    className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                    id="cantidadPersonas"
-                                    type="number"
-                                    min="1"
-                                    value={cantidadPersonas}
-                                    onChange={(e) => setCantidadPersonas(Number(e.target.value))}
-                                    required
-                                />
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadPersonas">Cantidad de Personas</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="cantidadPersonas" type="number" min="1" value={cantidadPersonas} onChange={(e) => setCantidadPersonas(Number(e.target.value))} required />
                             </div>
-                            <button
-                                className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-                                type="submit"
-                            >
-                                Registrar
-                            </button>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="horaEntrega">Hora de Entrega</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="horaEntrega" type="time" value={horaEntrega} onChange={(e) => setHoraEntrega(e.target.value)} required />
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="anticipo">Anticipo</label>
+                                <input className="shadow border rounded w-full py-2 px-3" id="anticipo" type="number" min="0" value={anticipo} onChange={(e) => setAnticipo(Number(e.target.value))} />
+                            </div>
+                            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none" type="submit">Registrar</button>
                         </form>
                     </div>
 
@@ -234,37 +124,30 @@
                                     <th className="px-4 py-2">Menú</th>
                                     <th className="px-4 py-2">Cantidad</th>
                                     <th className="px-4 py-2">Total</th>
+                                    <th className="px-4 py-2">Anticipo</th>
+                                    <th className="px-4 py-2">Restante</th>
+                                    <th className="px-4 py-2">Hora de Entrega</th>
                                     <th className="px-4 py-2">Estado</th>
-                                    <th className="px-4 py-2">Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {clientesPedidos.map((cp, index) => (
-                                    <tr key={index} onClick={() => handleClienteClick(cp.cliente.id)} className="cursor-pointer hover:bg-gray-100">
+                                    <tr key={index} className="hover:bg-gray-100">
                                         <td className="border px-4 py-2">{cp.cliente.nombre}</td>
                                         <td className="border px-4 py-2">{cp.cliente.telefono}</td>
                                         <td className="border px-4 py-2">{cp.cliente.direccion}</td>
                                         <td className="border px-4 py-2">{cp.pedido.menu}</td>
                                         <td className="border px-4 py-2">{cp.pedido.cantidad_personas}</td>
                                         <td className="border px-4 py-2">${cp.pedido.total.toFixed(2)}</td>
+                                        <td className="border px-4 py-2">${cp.pedido.anticipo.toFixed(2)}</td>
+                                        <td className="border px-4 py-2">${cp.pedido.restante.toFixed(2)}</td>
+                                        <td className="border px-4 py-2">{cp.pedido.hora_entrega}</td>
                                         <td className="border px-4 py-2">{cp.pedido.estado}</td>
-                                        <td className="border px-4 py-2">
-                                            <select
-                                                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                                                value={cp.pedido.estado}
-                                                onChange={(e) => handleChangeEstado(cp.pedido.id, e.target.value)}
-                                            >
-                                                <option value="Por entregar">Por entregar</option>
-                                                <option value="Entregado">Entregado</option>
-                                            </select>
-                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
-
-                    <ClienteDetalle cliente={clienteSeleccionado} />
 
                     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <h2 className="text-2xl font-bold mb-4">Ventas Totales</h2>
@@ -278,4 +161,3 @@
     </script>
 </body>
 </html>
-
