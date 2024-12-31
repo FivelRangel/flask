@@ -274,63 +274,7 @@
                         </div>
                     </div>
 
-                    const ClienteDetalle = ({ cliente }) => {
-    if (!cliente) return null;
 
-    const generarPDFDetalle = () => {
-        const { jsPDF } = window.jspdf;
-        const doc = new jsPDF();
-
-        // Título del PDF
-        doc.setFont('helvetica', 'bold');
-        doc.setFontSize(18);
-        doc.text('Detalle del Cliente', 105, 20, { align: 'center' });
-
-        // Detalles del cliente
-        doc.setFontSize(12);
-        doc.text(`Nombre: ${cliente.cliente.nombre}`, 20, 40);
-        doc.text(`Teléfono: ${cliente.cliente.telefono}`, 20, 50);
-        doc.text(`Dirección: ${cliente.cliente.direccion}`, 20, 60);
-
-        // Título de pedidos
-        doc.setFont('helvetica', 'bold');
-        doc.text('Pedidos:', 20, 80);
-
-        // Detalles de los pedidos
-        cliente.pedidos.forEach((pedido, index) => {
-            const baseY = 90 + index * 30; // Espaciado entre pedidos
-            doc.setFont('helvetica', 'normal');
-            doc.text(`Menú: ${pedido.menu}`, 20, baseY);
-            doc.text(`Cantidad: ${pedido.cantidad_personas}`, 20, baseY + 10);
-            doc.text(`Total: $${pedido.total.toFixed(2)}`, 20, baseY + 20);
-            doc.text(`Anticipo: $${pedido.anticipo.toFixed(2)}`, 80, baseY + 10);
-            doc.text(`Restante: $${pedido.restante.toFixed(2)}`, 80, baseY + 20);
-            doc.text(`Hora de Entrega: ${pedido.hora_entrega}`, 140, baseY + 10);
-            doc.text(`Estado: ${pedido.estado}`, 140, baseY + 20);
-        });
-
-        // Guardar PDF
-        doc.save(`Detalle_${cliente.cliente.nombre}.pdf`);
-    };
-
-    return (
-        <div className="bg-white shadow-md rounded-lg p-6 mt-6">
-            <h2 className="text-2xl font-bold mb-4">Detalles del Cliente</h2>
-            <p><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
-            <p><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
-            <p><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
-            <h3 className="text-xl font-semibold mt-4">Pedidos</h3>
-            {cliente.pedidos.map((pedido, index) => (
-                <div key={index} className="bg-gray-100 p-4 rounded-lg mt-2">
-                    <p><strong>Menú:</strong> {pedido.menu}</p>
-                    <p><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
-                    <p><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
-                    <p><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
-                    <p><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
-                    <p><strong>Hora de Entrega:</strong> {pedido.hora_entrega}</p>
-                    <p><strong>Estado:</strong> {pedido.estado}</p>
-                </div>
-            ))}
 
             {/* Botón para generar PDF */}
             <button
