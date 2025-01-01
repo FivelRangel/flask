@@ -359,7 +359,14 @@ React.useEffect(() => {
                                 {cp.cliente.nombre}
                             </button>
                         </td>
-                        <td className="border px-4 py-2">{cp.cliente.telefono}</td>
+<td className="border px-4 py-2">
+    <a
+        href={`tel:${cp.cliente.telefono}`}
+        className="text-blue-500 hover:underline"
+    >
+        {cp.cliente.telefono}
+    </a>
+</td>
                         <td className="border px-4 py-2">{cp.cliente.direccion}</td>
                         <td className="border px-4 py-2">{cp.pedido.menu}</td>
                         <td className="border px-4 py-2">{cp.pedido.cantidad_personas}</td>
