@@ -293,16 +293,18 @@ React.useEffect(() => {
                                 <input className="shadow border rounded w-full py-2 px-3" id="telefono" type="tel" value={telefono} onChange={(e) => setTelefono(e.target.value)} required />
                             </div>
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="direccion">Dirección</label>
-                                 <input
-                                    ref={inputRef}
-                                    className="shadow border rounded w-full py-2 px-3"
-                                    id="direccion"
-                                    type="text"
-                                    value={direccion}
-                                    onChange={(e) => setDireccion(e.target.value)}
-                                    required
-                                />                            </div>
+    <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="direccion">Dirección</label>
+    <input
+        ref={inputRef} // Asignar la referencia al input
+        className="shadow border rounded w-full py-2 px-3"
+        id="direccion"
+        type="text"
+        value={direccion}
+        onChange={(e) => setDireccion(e.target.value)} // Permitir escritura manual
+        placeholder="Ingresa una dirección"
+        required
+    />
+</div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Menú</label>
                                 <select className="shadow border rounded w-full py-2 px-3" id="menu" value={menu} onChange={(e) => setMenu(e.target.value)}>
