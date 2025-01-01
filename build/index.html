@@ -89,6 +89,22 @@
     }
 };
 
+            const borrarLista = async () => {
+    try {
+        const response = await fetch('/api/borrar_todo', { method: 'DELETE' });
+        if (response.ok) {
+            alert("Todos los registros han sido eliminados.");
+            setClientesPedidos([]); // Vaciar la lista en el frontend
+        } else {
+            const data = await response.json();
+            alert(`Error al eliminar registros: ${data.error}`);
+        }
+    } catch (error) {
+        alert("Error de conexión al servidor");
+        console.error(error);
+    }
+};
+
                       
          const ClienteDetalle = ({ cliente }) => {
     if (!cliente) return null;
@@ -339,7 +355,7 @@
     </button>
     <button
         className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-all"
-        onClick={generarPDFLista}
+        onClick={borrarLista}
     >
         Borrar todos los Pedidos
     </button>
