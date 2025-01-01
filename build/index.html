@@ -34,20 +34,29 @@
                 fetchPedidos();
                 fetchVentasTotales();
 
-                if (window.google) {
-                    const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
-                        types: ['geocode'], // Restringir a direcciones
-                        componentRestrictions: { country: 'mx' }, // Ajustar al país deseado
-                    });
+                  if (window.google) {
+        // Crear la instancia de Autocomplete
+        const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+            types: ['geocode'], // Restringir a direcciones
+            componentRestrictions: { country: 'mx' }, // Ajustar al país deseado (México)
+        });
 
-                    autocomplete.addListener('place_changed', () => {
-                        const place = autocomplete.getPlace();
-                        if (place.formatted_address) {
-                            setDireccion(place.formatted_address); // Establecer dirección seleccionada
-                        }
-                    });
-                }
-            }, []);
+        // Listener para manejar la selección de una dirección
+        autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+            if (place.formatted_address) {
+                setDireccion(place.formatted_address); // Actualiza el estado con la dirección seleccionada
+            }
+        });
+    }
+}, []);
+
+// Cambiar el valor del input cuando el estado de dirección cambie
+React.useEffect(() => {
+    if (inputRef.current) {
+        inputRef.current.value = direccion; // Actualiza el valor del input con la dirección seleccionada
+    }
+}, [direccion]);
             const fetchPedidos = async () => {
                 const response = await fetch('/api/pedidos');
                 const data = await response.json();
