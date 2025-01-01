@@ -367,7 +367,16 @@ React.useEffect(() => {
         {cp.cliente.telefono}
     </a>
 </td>
-                        <td className="border px-4 py-2">{cp.cliente.direccion}</td>
+<td className="border px-4 py-2">
+    <a
+        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cp.cliente.direccion)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 hover:underline"
+    >
+        {cp.cliente.direccion}
+    </a>
+</td>
                         <td className="border px-4 py-2">{cp.pedido.menu}</td>
                         <td className="border px-4 py-2">{cp.pedido.cantidad_personas}</td>
                         <td className="border px-4 py-2">${cp.pedido.total.toFixed(2)}</td>
