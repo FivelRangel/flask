@@ -120,7 +120,7 @@ React.useEffect(() => {
             const handleChangeEstado = async (pedidoId, nuevoEstado) => {
     try {
         const response = await fetch(`/api/pedidos/${pedidoId}`, {
-            method: 'PUT', // Método para actualizar
+            method: 'PATCH', // Método para actualizar
             headers: {
                 'Content-Type': 'application/json',
             },
