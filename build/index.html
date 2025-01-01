@@ -117,6 +117,37 @@ React.useEffect(() => {
     }
 };
 
+            const handleChangeEstado = async (pedidoId, nuevoEstado) => {
+    try {
+        const response = await fetch(`/api/pedidos/${pedidoId}`, {
+            method: 'PUT', // Método para actualizar
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ estado: nuevoEstado }), // Enviar el nuevo estado
+        });
+
+        if (response.ok) {
+            // Si la actualización fue exitosa, actualiza el estado local
+            setClientesPedidos((prevPedidos) =>
+                prevPedidos.map((cp) =>
+                    cp.pedido.id === pedidoId
+                        ? { ...cp, pedido: { ...cp.pedido, estado: nuevoEstado } }
+                        : cp
+                )
+            );
+        } else {
+            const error = await response.json();
+            console.error('Error al actualizar el estado:', error);
+            alert('No se pudo actualizar el estado.');
+        }
+    } catch (error) {
+        console.error('Error de conexión al servidor:', error);
+        alert('Error de conexión al servidor.');
+    }
+};
+
+
             const borrarLista = async () => {
     try {
         const response = await fetch('/api/borrar_todo', { method: 'DELETE' });
