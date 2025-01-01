@@ -189,6 +189,13 @@
 
 
             const generarPDFLista = () => {
+
+                    // Verificar si no hay clientes
+    if (clientesPedidos.length === 0) {
+        alert("No hay clientes en la lista para generar el PDF.");
+        return; // Salir de la función
+    }
+                
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF();
                 const margin = 10;
