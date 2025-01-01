@@ -27,13 +27,26 @@
             const [anticipo, setAnticipo] = React.useState(0);
             const [clientesPedidos, setClientesPedidos] = React.useState([]);
             const [ventasTotales, setVentasTotales] = React.useState(0);
-            const [clienteSeleccionado, setClienteSeleccionado] = React.useState(null);
+            const inputRef = React.useRef(null); // Referencia para el campo de dirección
 
             React.useEffect(() => {
                 fetchPedidos();
                 fetchVentasTotales();
-            }, []);
 
+                if (window.google) {
+                    const autocomplete = new window.google.maps.places.Autocomplete(inputRef.current, {
+                        types: ['geocode'], // Restringir a direcciones
+                        componentRestrictions: { country: 'mx' }, // Ajustar al país deseado
+                    });
+
+                    autocomplete.addListener('place_changed', () => {
+                        const place = autocomplete.getPlace();
+                        if (place.formatted_address) {
+                            setDireccion(place.formatted_address); // Establecer dirección seleccionada
+                        }
+                    });
+                }
+            }, []);
             const fetchPedidos = async () => {
                 const response = await fetch('/api/pedidos');
                 const data = await response.json();
