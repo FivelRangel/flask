@@ -266,64 +266,68 @@
                         </form>
                     </div>
 
-                    <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-                        <h2 className="text-2xl font-bold mb-4">Lista de Clientes y Pedidos</h2>
-                        <table className="min-w-full">
-                            <thead>
-                                <tr>
-                                    <th className="px-4 py-2">Nombre</th>
-                                    <th className="px-4 py-2">Teléfono</th>
-                                    <th className="px-4 py-2">Dirección</th>
-                                    <th className="px-4 py-2">Menú</th>
-                                    <th className="px-4 py-2">Cantidad</th>
-                                    <th className="px-4 py-2">Total</th>
-                                    <th className="px-4 py-2">Anticipo</th>
-                                    <th className="px-4 py-2">Restante</th>
-                                    <th className="px-4 py-2">Hora de Entrega</th>
-                                    <th className="px-4 py-2">Estado</th>
-                                    <th className="px-4 py-2">Acciones</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {clientesPedidos.map((cp, index) => (
-                                    <tr key={index} className="hover:bg-gray-100">
-                                        <td className="border px-4 py-2">
-                                            <button
-                                                onClick={() => handleClienteClick(cp.cliente.id)}
-                                                className="text-blue-500 hover:underline"
-                                            >
-                                                {cp.cliente.nombre}
-                                            </button>
-                                        </td>
-                                        <td className="border px-4 py-2">{cp.cliente.telefono}</td>
-                                        <td className="border px-4 py-2">{cp.cliente.direccion}</td>
-                                        <td className="border px-4 py-2">{cp.pedido.menu}</td>
-                                        <td className="border px-4 py-2">{cp.pedido.cantidad_personas}</td>
-                                        <td className="border px-4 py-2">${cp.pedido.total.toFixed(2)}</td>
-                                        <td className="border px-4 py-2">${cp.pedido.anticipo.toFixed(2)}</td>
-                                        <td className="border px-4 py-2">${cp.pedido.restante.toFixed(2)}</td>
-                                        <td className="border px-4 py-2">{cp.pedido.hora_entrega}</td>
-                                        <td className="border px-4 py-2">
-                                            <select
-                                                className="shadow border rounded w-full py-2 px-3"
-                                                value={cp.pedido.estado}
-                                                onChange={(e) => handleChangeEstado(cp.pedido.id, e.target.value)}
-                                            >
-                                                <option value="Por entregar">Por entregar</option>
-                                                <option value="Entregado">Entregado</option>
-                                            </select>
-                                        </td>
-                                        <td className="border px-4 py-2">
-                                            <button
-                                            className="bg-blue-500 text-white px-4 py-2 rounded"
-                                           onClick={() => handleClienteClick(cp.cliente.id)}
-                                            > Ver Detalles
-                                            </button>
-                                        </td>    
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+<div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+    <h2 className="text-2xl font-bold mb-4">Lista de Clientes y Pedidos</h2>
+    <div className="overflow-x-auto">
+        <table className="min-w-full">
+            <thead>
+                <tr>
+                    <th className="px-4 py-2">Nombre</th>
+                    <th className="px-4 py-2">Teléfono</th>
+                    <th className="px-4 py-2">Dirección</th>
+                    <th className="px-4 py-2">Menú</th>
+                    <th className="px-4 py-2">Cantidad</th>
+                    <th className="px-4 py-2">Total</th>
+                    <th className="px-4 py-2">Anticipo</th>
+                    <th className="px-4 py-2">Restante</th>
+                    <th className="px-4 py-2">Hora de Entrega</th>
+                    <th className="px-4 py-2">Estado</th>
+                    <th className="px-4 py-2">Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {clientesPedidos.map((cp, index) => (
+                    <tr key={index} className="hover:bg-gray-100">
+                        <td className="border px-4 py-2">
+                            <button
+                                onClick={() => handleClienteClick(cp.cliente.id)}
+                                className="text-blue-500 hover:underline"
+                            >
+                                {cp.cliente.nombre}
+                            </button>
+                        </td>
+                        <td className="border px-4 py-2">{cp.cliente.telefono}</td>
+                        <td className="border px-4 py-2">{cp.cliente.direccion}</td>
+                        <td className="border px-4 py-2">{cp.pedido.menu}</td>
+                        <td className="border px-4 py-2">{cp.pedido.cantidad_personas}</td>
+                        <td className="border px-4 py-2">${cp.pedido.total.toFixed(2)}</td>
+                        <td className="border px-4 py-2">${cp.pedido.anticipo.toFixed(2)}</td>
+                        <td className="border px-4 py-2">${cp.pedido.restante.toFixed(2)}</td>
+                        <td className="border px-4 py-2">{cp.pedido.hora_entrega}</td>
+                        <td className="border px-4 py-2">
+                            <select
+                                className="shadow border rounded w-full py-2 px-3"
+                                value={cp.pedido.estado}
+                                onChange={(e) => handleChangeEstado(cp.pedido.id, e.target.value)}
+                            >
+                                <option value="Por entregar">Por entregar</option>
+                                <option value="Entregado">Entregado</option>
+                            </select>
+                        </td>
+                        <td className="border px-4 py-2">
+                            <button
+                                className="bg-blue-500 text-white px-4 py-2 rounded"
+                                onClick={() => handleClienteClick(cp.cliente.id)}
+                            >
+                                Ver Detalles
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    </div>
+
 
                         {/* Botón para generar PDF */}
                         <div className="mt-6">
