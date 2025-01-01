@@ -27,6 +27,7 @@
             const [anticipo, setAnticipo] = React.useState(0);
             const [clientesPedidos, setClientesPedidos] = React.useState([]);
             const [ventasTotales, setVentasTotales] = React.useState(0);
+            const [clienteSeleccionado, setClienteSeleccionado] = React.useState(null);
             const inputRef = React.useRef(null); // Referencia para el campo de dirección
 
             React.useEffect(() => {
