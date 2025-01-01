@@ -45,6 +45,10 @@
                 setVentasTotales(data.ventasTotales);
             };
 
+            const cerrarCard = () => {
+    setClienteSeleccionado(null); // Reinicia el estado a null para ocultar la card
+};
+
             const handleSubmit = async (e) => {
                 e.preventDefault();
                 const response = await fetch('/api/clientes', {
@@ -95,6 +99,9 @@
         if (response.ok) {
             alert("Todos los registros han sido eliminados.");
             setClientesPedidos([]); // Vaciar la lista en el frontend
+            setClienteSeleccionado(null);
+
+            
         } else {
             const data = await response.json();
             alert(`Error al eliminar registros: ${data.error}`);
