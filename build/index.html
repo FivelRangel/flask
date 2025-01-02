@@ -53,10 +53,34 @@
 
 // Cambiar el valor del input cuando el estado de dirección cambie
 React.useEffect(() => {
+    // Actualiza el valor del input con la dirección seleccionada
     if (inputRef.current) {
-        inputRef.current.value = direccion; // Actualiza el valor del input con la dirección seleccionada
+        inputRef.current.value = direccion;
     }
-}, [direccion]);
+
+    // Maneja el mapa en el detalle del cliente
+    if (window.google && cliente) {
+        const geocoder = new window.google.maps.Geocoder();
+        const map = new window.google.maps.Map(document.getElementById("map"), {
+            zoom: 15,
+            center: { lat: 19.432608, lng: -99.133209 }, // Fallback a Ciudad de México
+        });
+
+        geocoder.geocode({ address: cliente.cliente.direccion }, (results, status) => {
+            if (status === "OK" && results[0]) {
+                const location = results[0].geometry.location;
+                map.setCenter(location);
+                new window.google.maps.Marker({
+                    map: map,
+                    position: location,
+                });
+            } else {
+                console.error("Geocode falló debido a: " + status);
+            }
+        });
+    }
+}, [direccion, cliente]);
+
             const fetchPedidos = async () => {
                 const response = await fetch('/api/pedidos');
                 const data = await response.json();
@@ -216,6 +240,11 @@ React.useEffect(() => {
                     <p className="text-gray-800"><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
                     <p className="text-gray-800"><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
                 </div>
+
+                <div className="mt-6">
+        <h3 className="text-lg font-bold text-gray-800 mb-2">Ubicación</h3>
+        <div id="map" className="w-full h-64 border rounded"></div>
+    </div>
 
                
                 
