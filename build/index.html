@@ -217,25 +217,7 @@ React.useEffect(() => {
                     <p className="text-gray-800"><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
                 </div>
 
-                {/* Botón para generar PDF */}
-                <div className="mt-6">
-                    <button
-                        className="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition-all"
-                        onClick={generarPDF}
-                    >
-                        Generar PDF
-                    </button>
-                </div>
-
-                                <div className="mt-6">
-                    <button
-                        className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-all"
-                        onClick={cerrarCard}
-                    >
-                        Cerrar Detalles
-                    </button>
-                </div>
-
+               
                 
 
                 
@@ -258,6 +240,25 @@ React.useEffect(() => {
                     ))}
                 </div>
             </div>
+      {/* Botón para generar PDF */}
+                <div className="mt-6">
+                    <button
+                        className="bg-green-500 text-white font-bold py-2 px-4 rounded hover:bg-green-700 transition-all"
+                        onClick={generarPDF}
+                    >
+                        Generar PDF
+                    </button>
+                </div>
+
+                                <div className="mt-6">
+                    <button
+                        className="bg-red-500 text-white font-bold py-2 px-4 rounded hover:bg-red-700 transition-all"
+                        onClick={cerrarCard}
+                    >
+                        Cerrar Detalles
+                    </button>
+                </div>
+
         </div>
     );
 };
