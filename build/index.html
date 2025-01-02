@@ -238,8 +238,17 @@ React.useEffect(() => {
                 <div className="space-y-4">
                     <p className="text-gray-800"><strong>Nombre:</strong> {cliente.cliente.nombre}</p>
                     <p className="text-gray-800"><strong>Teléfono:</strong> {cliente.cliente.telefono}</p>
-                    <p className="text-gray-800"><strong>Dirección:</strong> {cliente.cliente.direccion}</p>
-                </div>
+<p className="text-gray-800">
+    <strong>Dirección:</strong>{' '}
+    <a
+        href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cliente.cliente.direccion)}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-500 hover:underline"
+    >
+        {cliente.cliente.direccion}
+    </a>
+</p>                </div>
 
                 <div className="mt-6">
         <h3 className="text-lg font-bold text-gray-800 mb-2">Ubicación</h3>
