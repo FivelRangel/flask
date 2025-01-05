@@ -393,12 +393,14 @@ React.useEffect(() => {
 </div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Menú</label>
-<select className="shadow border rounded w-full py-2 px-3" id="tipoTamal" value={tipoTamal} onChange={(e) => setTipoTamal(e.target.value)}>
-                                    <option value="Tamal de Lomo">Tamal de Lomo</option>
-                                    <option value="Tamal de Pollo">Tamal de Pollo</option>
-                                    <option value="Tamal de Picadillo">Tamal de Picadillo</option>
-                                    <option value="Tamal de Dulce">Tamal de Dulce</option>
-                                </select>
+<input
+    className="shadow border rounded w-full py-2 px-3"
+    id="tipoTamal"
+    type="text"
+    placeholder="Ingresa el tipo de tamal"
+    value={tipoTamal}
+    onChange={(e) => setTipoTamal(e.target.value)}
+/>
                             </div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadPersonas">Cantidad de Personas</label>
