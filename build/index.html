@@ -216,17 +216,15 @@ React.useEffect(() => {
         // Información de los Pedidos
         cliente.pedidos.forEach((pedido, index) => {
             const offsetY = 60 + index * 40; // Espaciado dinámico por cada pedido
-  // Pedido encabezado
-    doc.text(`Pedido ${index + 1}`, 10, baseOffsetY);
 
-    // Detalles del pedido
-    doc.text(`Tipo de Tamal: ${pedido.tipo_tamal}`, 20, baseOffsetY + 10);
-    doc.text(`Cantidad de Tamales: ${pedido.cantidad_tamales}`, 20, baseOffsetY + 20);
-    doc.text(`Total: $${pedido.total.toFixed(2)}`, 20, baseOffsetY + 30);
-    doc.text(`Anticipo: $${pedido.anticipo.toFixed(2)}`, 20, baseOffsetY + 40);
-    doc.text(`Restante: $${pedido.restante.toFixed(2)}`, 20, baseOffsetY + 50);
-    doc.text(`Hora de Entrega: ${pedido.hora_entrega}`, 20, baseOffsetY + 60);
-    doc.text(`Estado: ${pedido.estado}`, 20, baseOffsetY + 70);
+            doc.text(Pedido ${index + 1}, 10, offsetY);
+            doc.text(Tipo de Tamal: ${pedido.tipo_tamal}, 20, offsetY + 10);
+            doc.text(Cantidad de Tamales: ${pedido.cantidad_tamales}, 20, offsetY + 20);
+            doc.text(Total: $${pedido.total.toFixed(2)}, 20, offsetY + 30);
+            doc.text(Anticipo: $${pedido.anticipo.toFixed(2)}, 20, offsetY + 40);
+            doc.text(Restante: $${pedido.restante.toFixed(2)}, 20, offsetY + 50);
+            doc.text(Hora de Entrega: ${pedido.hora_entrega}, 20, offsetY + 60);
+            doc.text(Estado: ${pedido.estado}, 20, offsetY + 70);
         });
 
         // Guardar PDF
