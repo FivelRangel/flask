@@ -34,40 +34,66 @@ ventas_totales = 0
 
 @app.route('/api/clientes', methods=['POST'])
 def registrar_cliente_y_pedido():
-    data = request.json
+    try:
+        # Log inicial
+        print("Inicio del endpoint /api/clientes [POST]")
+        
+        # Log de los datos recibidos
+        data = request.json
+        print(f"Datos recibidos: {data}")
 
-    nuevo_cliente = Cliente(
-        nombre=data['nombre'],
-        telefono=data['telefono'],
-        direccion=data['direccion']
-    )
+        # Validar datos requeridos
+        required_fields = ['nombre', 'telefono', 'direccion', 'menu', 'cantidadPersonas', 'horaEntrega']
+        for field in required_fields:
+            if field not in data:
+                error_message = f"Falta el campo requerido: {field}"
+                print(f"Error: {error_message}")
+                return jsonify({"error": error_message}), 400
 
-    db.session.add(nuevo_cliente)
-    db.session.commit()
+        # Crear cliente
+        nuevo_cliente = Cliente(
+            nombre=data['nombre'],
+            telefono=data['telefono'],
+            direccion=data['direccion']
+        )
+        db.session.add(nuevo_cliente)
+        db.session.commit()
+        print(f"Cliente creado con ID: {nuevo_cliente.id}")
 
-    total = PRECIOS_MENU[data['menu']] * data['cantidadPersonas']
-    anticipo = data.get('anticipo', 0)
-    restante = 0 if anticipo == 0 else total - anticipo
+        # Calcular total, anticipo y restante
+        total = PRECIOS_MENU[data['menu']] * data['cantidadPersonas']
+        anticipo = data.get('anticipo', 0)
+        restante = total - anticipo
+        print(f"Total calculado: {total}, Anticipo: {anticipo}, Restante: {restante}")
 
-    nuevo_pedido = Pedido(
-        cliente_id=nuevo_cliente.id,
-        menu=data['menu'],
-        cantidad_personas=data['cantidadPersonas'],
-        total=total,
-        hora_entrega=data['horaEntrega'],
-        anticipo=anticipo,
-        restante=restante
-    )
+        # Crear pedido
+        nuevo_pedido = Pedido(
+            cliente_id=nuevo_cliente.id,
+            menu=data['menu'],
+            cantidad_personas=data['cantidadPersonas'],
+            total=total,
+            hora_entrega=data['horaEntrega'],
+            anticipo=anticipo,
+            restante=restante
+        )
+        db.session.add(nuevo_pedido)
+        db.session.commit()
+        print(f"Pedido creado con ID: {nuevo_pedido.id}")
 
-    db.session.add(nuevo_pedido)
-    db.session.commit()
+        # Respuesta exitosa
+        print("Cliente y pedido registrados exitosamente.")
+        return jsonify({
+            "message": "Cliente y pedido registrados",
+            "total": total,
+            "anticipo": anticipo,
+            "restante": restante
+        }), 201
 
-    return jsonify({
-        "message": "Cliente y pedido registrados",
-        "total": total,
-        "anticipo": anticipo,
-        "restante": restante
-    }), 201
+    except Exception as e:
+        # Log de errores
+        print(f"Error en /api/clientes [POST]: {str(e)}")
+        return jsonify({"error": "Error interno del servidor.", "details": str(e)}), 500
+
 
 @app.route('/api/pedidos/<int:id>', methods=['PATCH'])
 def cambiar_estado_pedido(id):
