@@ -352,7 +352,11 @@ React.useEffect(() => {
                     y += 10;
 
               doc.text(`Tipo de Tamal: ${cp.pedido.tipo_tamal}`, margin, y); // Actualizado
+                                        y += 6;
+
         doc.text(`Cantidad de Tamales: ${cp.pedido.cantidad_tamales}`, margin + 50, y); // Actualizado
+                                        y += 6;
+
         
                     doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin + 100, y);
                     y += 6;
