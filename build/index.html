@@ -21,7 +21,7 @@
             const [nombre, setNombre] = React.useState('');
             const [telefono, setTelefono] = React.useState('');
             const [direccion, setDireccion] = React.useState('');
-            const [menu, setMenu] = React.useState('Tamal de Lomo');
+            const [tipoTamal, setTipoTamal] = React.useState('Tamal de Lomo'); // Cambiar `menu` a `tipoTamal`
             const [cantidadPersonas, setCantidadPersonas] = React.useState(5);
             const [horaEntrega, setHoraEntrega] = React.useState('');
             const [anticipo, setAnticipo] = React.useState(0);
@@ -105,14 +105,15 @@ React.useEffect(() => {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        nombre,
-                        telefono,
-                        direccion,
-                        menu,
-                        cantidadPersonas,
-                        horaEntrega,
-                        anticipo
-                    }),
+    nombre,
+    telefono,
+    direccion,
+    tipoTamal, // Cambiar `menu` a `tipoTamal`
+    cantidadPersonas,
+    horaEntrega,
+    anticipo
+}),
+
                 });
                 if (response.ok) {
                     setNombre('');
@@ -342,9 +343,9 @@ React.useEffect(() => {
                     doc.text(`Dirección: ${cp.cliente.direccion}`, margin, y);
                     y += 10;
 
-                    // Pedido
-                    doc.text(`Menú: ${cp.pedido.menu}`, margin, y);
-                    doc.text(`Cantidad: ${cp.pedido.cantidad_personas}`, margin + 50, y);
+                  doc.text(`Tipo de Tamal: ${cp.pedido.tipo_tamal}`, margin, y); // Actualizado
+        doc.text(`Cantidad de Tamales: ${cp.pedido.cantidad_tamales}`, margin + 50, y); // Actualizado
+        
                     doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin + 100, y);
                     y += 6;
                     doc.text(`Anticipo: $${cp.pedido.anticipo.toFixed(2)}`, margin, y);
@@ -392,7 +393,7 @@ React.useEffect(() => {
 </div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Menú</label>
-                                <select className="shadow border rounded w-full py-2 px-3" id="menu" value={menu} onChange={(e) => setMenu(e.target.value)}>
+<select className="shadow border rounded w-full py-2 px-3" id="tipoTamal" value={tipoTamal} onChange={(e) => setTipoTamal(e.target.value)}>
                                     <option value="Tamal de Lomo">Tamal de Lomo</option>
                                     <option value="Tamal de Pollo">Tamal de Pollo</option>
                                     <option value="Tamal de Picadillo">Tamal de Picadillo</option>
