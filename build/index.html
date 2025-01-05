@@ -344,27 +344,17 @@ React.useEffect(() => {
                     doc.text(`Dirección: ${cp.cliente.direccion}`, margin, y);
                     y += 10;
 
-                 doc.text(`Tipo de Tamal: ${cp.pedido.tipo_tamal}`, margin, y); // "Tipo de Tamal" en su propio renglón
-y += 6; // Incrementa `y` para el siguiente renglón
-
-doc.text(`Cantidad de Tamales: ${cp.pedido.cantidad_tamales}`, margin, y); // Cantidad en su propio renglón
-y += 6; // Incrementa `y` para el siguiente renglón
-
-doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin, y); // Total en su propio renglón
-y += 6; // Incrementa `y` para el siguiente renglón
-
-doc.text(`Anticipo: $${cp.pedido.anticipo.toFixed(2)}`, margin, y); // Anticipo en su propio renglón
-y += 6; // Incrementa `y` para el siguiente renglón
-
-doc.text(`Restante: $${cp.pedido.restante.toFixed(2)}`, margin, y); // Restante en su propio renglón
-y += 6; // Incrementa `y` para el siguiente renglón
-
-doc.text(`Hora de Entrega: ${cp.pedido.hora_entrega}`, margin, y); // Hora de Entrega en su propio renglón
-y += 6; // Incrementa `y` para el siguiente renglón
-
-doc.text(`Estado: ${cp.pedido.estado}`, margin, y); // Estado en su propio renglón
-y += 10; // Incrementa `y` para el espacio entre pedidos
-
+               cliente.pedidos.forEach((pedido, index) => {
+            const offsetY = 60 + index * 40; // Espaciado dinámico por cada pedido
+            doc.text(Pedido ${index + 1}, 10, offsetY);
+            doc.text(Tipo de Tamal: ${pedido.tipo_tamal}, 20, offsetY + 10);
+            doc.text(Cantidad de Tamales: ${pedido.cantidad_tamales}, 20, offsetY + 20);
+            doc.text(Total: $${pedido.total.toFixed(2)}, 20, offsetY + 30);
+            doc.text(Anticipo: $${pedido.anticipo.toFixed(2)}, 20, offsetY + 40);
+            doc.text(Restante: $${pedido.restante.toFixed(2)}, 20, offsetY + 50);
+            doc.text(Hora de Entrega: ${pedido.hora_entrega}, 20, offsetY + 60);
+            doc.text(Estado: ${pedido.estado}, 20, offsetY + 70);
+        });
 
                     doc.setDrawColor(200, 200, 200);
                     doc.line(margin, y, 200, y); // Línea divisoria
