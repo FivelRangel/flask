@@ -43,7 +43,7 @@ def registrar_cliente_y_pedido():
         print(f"Datos recibidos: {data}")
 
         # Validar datos requeridos
-required_fields = ['nombre', 'telefono', 'direccion', 'tipoTamal', 'cantidadPersonas', 'horaEntrega']
+        required_fields = ['nombre', 'telefono', 'direccion', 'tipoTamal', 'cantidadPersonas', 'horaEntrega']
         for field in required_fields:
             if field not in data:
                 error_message = f"Falta el campo requerido: {field}"
@@ -61,7 +61,7 @@ required_fields = ['nombre', 'telefono', 'direccion', 'tipoTamal', 'cantidadPers
         print(f"Cliente creado con ID: {nuevo_cliente.id}")
 
         # Calcular total, anticipo y restante
-        total = PRECIO_TAMAL * data['cantidadPersonas']  
+        total = PRECIO_TAMAL * data['cantidadPersonas']  # Usar precio unitario
         anticipo = data.get('anticipo', 0)
         restante = total - anticipo
         print(f"Total calculado: {total}, Anticipo: {anticipo}, Restante: {restante}")
@@ -69,8 +69,8 @@ required_fields = ['nombre', 'telefono', 'direccion', 'tipoTamal', 'cantidadPers
         # Crear pedido
         nuevo_pedido = Pedido(
             cliente_id=nuevo_cliente.id,
-            tipo_tamal=data['tipoTamal'],  # Usando el campo correcto
-            cantidad_personas=data['cantidadPersonas'],
+            tipo_tamal=data['tipoTamal'], 
+            cantidad_tamales=data['cantidadPersonas'],  
             total=total,
             hora_entrega=data['horaEntrega'],
             anticipo=anticipo,
@@ -93,7 +93,6 @@ required_fields = ['nombre', 'telefono', 'direccion', 'tipoTamal', 'cantidadPers
         # Log de errores
         print(f"Error en /api/clientes [POST]: {str(e)}")
         return jsonify({"error": "Error interno del servidor.", "details": str(e)}), 500
-
 
 @app.route('/api/pedidos/<int:id>', methods=['PATCH'])
 def cambiar_estado_pedido(id):
