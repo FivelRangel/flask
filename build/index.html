@@ -21,8 +21,8 @@
             const [nombre, setNombre] = React.useState('');
             const [telefono, setTelefono] = React.useState('');
             const [direccion, setDireccion] = React.useState('');
-            const [menu, setMenu] = React.useState('Menú 1');
-            const [cantidadPersonas, setCantidadPersonas] = React.useState(1);
+            const [menu, setMenu] = React.useState('Tamal de Lomo');
+            const [cantidadPersonas, setCantidadPersonas] = React.useState(5);
             const [horaEntrega, setHoraEntrega] = React.useState('');
             const [anticipo, setAnticipo] = React.useState(0);
             const [clientesPedidos, setClientesPedidos] = React.useState([]);
@@ -216,8 +216,8 @@ React.useEffect(() => {
         cliente.pedidos.forEach((pedido, index) => {
             const offsetY = 60 + index * 40; // Espaciado dinámico por cada pedido
             doc.text(`Pedido ${index + 1}`, 10, offsetY);
-            doc.text(`Menú: ${pedido.menu}`, 20, offsetY + 10);
-            doc.text(`Cantidad: ${pedido.cantidad_personas}`, 20, offsetY + 20);
+            doc.text(`Tipo de Tamal: ${pedido.tipo_tamal}`, 20, offsetY + 10);
+            doc.text(`Cantidad de Tamales: ${pedido.cantidad_tamales}`, 20, offsetY + 20);
             doc.text(`Total: $${pedido.total.toFixed(2)}`, 20, offsetY + 30);
             doc.text(`Anticipo: $${pedido.anticipo.toFixed(2)}`, 20, offsetY + 40);
             doc.text(`Restante: $${pedido.restante.toFixed(2)}`, 20, offsetY + 50);
@@ -268,8 +268,8 @@ React.useEffect(() => {
                 <div className="space-y-6">
                     {cliente.pedidos.map((pedido, index) => (
                         <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
-                            <p className="text-gray-800"><strong>Menú:</strong> {pedido.menu}</p>
-                            <p className="text-gray-800"><strong>Cantidad:</strong> {pedido.cantidad_personas}</p>
+                           <p className="text-gray-800"><strong>Tipo de Tamal:</strong> {pedido.tipo_tamal}</p>
+                            <p className="text-gray-800"><strong>Cantidad de Tamales:</strong> {pedido.cantidad_tamales}</p>
                             <p className="text-gray-800"><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
                             <p className="text-gray-800"><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
                             <p className="text-gray-800"><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
@@ -393,15 +393,21 @@ React.useEffect(() => {
                             <div>
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Menú</label>
                                 <select className="shadow border rounded w-full py-2 px-3" id="menu" value={menu} onChange={(e) => setMenu(e.target.value)}>
-                                    <option value="Menú 1">Menú 1</option>
-                                    <option value="Menú 2">Menú 2</option>
-                                    <option value="Menú 3">Menú 3</option>
+                                    <option value="Tamal de Lomo">Tamal de Lomo</option>
+                                    <option value="Tamal de Pollo">Tamal de Pollo</option>
+                                    <option value="Tamal de Picadillo">Tamal de Picadillo</option>
+                                    <option value="Tamal de Dulce">Tamal de Dulce</option>
                                 </select>
                             </div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadPersonas">Cantidad de Personas</label>
-                                <input className="shadow border rounded w-full py-2 px-3" id="cantidadPersonas" type="number" min="1" value={cantidadPersonas} onChange={(e) => setCantidadPersonas(Number(e.target.value))} required />
-                            </div>
+<select className="shadow border rounded w-full py-2 px-3" id="cantidadPersonas" value={cantidadPersonas} onChange={(e) => setCantidadPersonas(Number(e.target.value))}>
+    <option value={5}>5 Tamales</option>
+    <option value={10}>10 Tamales</option>
+    <option value={15}>15 Tamales</option>
+    <option value={20}>20 Tamales</option>
+    <option value={30}>30 Tamales</option>
+</select>                            </div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="horaEntrega">Hora de Entrega</label>
                                 <input className="shadow border rounded w-full py-2 px-3" id="horaEntrega" type="time" value={horaEntrega} onChange={(e) => setHoraEntrega(e.target.value)} required />
@@ -423,8 +429,8 @@ React.useEffect(() => {
                     <th className="px-4 py-2">Nombre</th>
                     <th className="px-4 py-2">Teléfono</th>
                     <th className="px-4 py-2">Dirección</th>
-                    <th className="px-4 py-2">Menú</th>
-                    <th className="px-4 py-2">Cantidad</th>
+                    <th className="px-4 py-2">Tipo de Tamal</th>
+<th className="px-4 py-2">Cantidad de Tamales</th>
                     <th className="px-4 py-2">Total</th>
                     <th className="px-4 py-2">Anticipo</th>
                     <th className="px-4 py-2">Restante</th>
@@ -462,8 +468,8 @@ React.useEffect(() => {
         {cp.cliente.direccion}
     </a>
 </td>
-                        <td className="border px-4 py-2">{cp.pedido.menu}</td>
-                        <td className="border px-4 py-2">{cp.pedido.cantidad_personas}</td>
+                        <td className="border px-4 py-2">{cp.pedido.tipo_tamal}</td>
+                        <td className="border px-4 py-2">{cp.pedido.cantidad_tamales}</td>
                         <td className="border px-4 py-2">${cp.pedido.total.toFixed(2)}</td>
                         <td className="border px-4 py-2">${cp.pedido.anticipo.toFixed(2)}</td>
                         <td className="border px-4 py-2">${cp.pedido.restante.toFixed(2)}</td>
