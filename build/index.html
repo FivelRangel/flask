@@ -217,10 +217,11 @@ React.useEffect(() => {
         cliente.pedidos.forEach((pedido, index) => {
             const offsetY = 60 + index * 40; // Espaciado dinámico por cada pedido
 
-            text(Pedido ${index + 1}, 10, offsetY);
-            doc.text(Tipo de Tamal: ${pedido.tipo_tamal}, 20, offsetY + 10);
-            doc.text(Cantidad de Tamales: ${pedido.cantidad_tamales}, 20, offsetY + 20);
-            doc.text(Total: $${pedido.total.toFixed(2)}, 20, offsetY + 30);
+          doc.text(`Pedido ${index + 1}, 10, offsetY);
+doc.text(Tipo de Tamal: ${pedido.tipo_tamal}, 10, offsetY + 10);
+doc.text(Cantidad de Tamales: ${pedido.cantidad_tamales}, 10, offsetY + 20);
+doc.text(Total: $${pedido.total.toFixed(2)}, 10, offsetY + 30);
+
             doc.text(Anticipo: $${pedido.anticipo.toFixed(2)}, 20, offsetY + 40);
             doc.text(Restante: $${pedido.restante.toFixed(2)}, 20, offsetY + 50);
             doc.text(Hora de Entrega: ${pedido.hora_entrega}, 20, offsetY + 60);
