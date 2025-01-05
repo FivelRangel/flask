@@ -344,17 +344,27 @@ React.useEffect(() => {
                     doc.text(`Dirección: ${cp.cliente.direccion}`, margin, y);
                     y += 10;
 
-                  doc.text(`Tipo de Tamal: ${cp.pedido.tipo_tamal}`, margin, y); // Actualizado
-        doc.text(`Cantidad de Tamales: ${cp.pedido.cantidad_tamales}`, margin + 50, y); // Actualizado
-        
-                    doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin + 100, y);
-                    y += 6;
-                    doc.text(`Anticipo: $${cp.pedido.anticipo.toFixed(2)}`, margin, y);
-                    doc.text(`Restante: $${cp.pedido.restante.toFixed(2)}`, margin + 50, y);
-                    y += 6;
-                    doc.text(`Hora de Entrega: ${cp.pedido.hora_entrega}`, margin, y);
-                    doc.text(`Estado: ${cp.pedido.estado}`, margin + 70, y);
-                    y += 10;
+                 doc.text(`Tipo de Tamal: ${cp.pedido.tipo_tamal}`, margin, y); // "Tipo de Tamal" en su propio renglón
+y += 6; // Incrementa `y` para el siguiente renglón
+
+doc.text(`Cantidad de Tamales: ${cp.pedido.cantidad_tamales}`, margin, y); // Cantidad en su propio renglón
+y += 6; // Incrementa `y` para el siguiente renglón
+
+doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin, y); // Total en su propio renglón
+y += 6; // Incrementa `y` para el siguiente renglón
+
+doc.text(`Anticipo: $${cp.pedido.anticipo.toFixed(2)}`, margin, y); // Anticipo en su propio renglón
+y += 6; // Incrementa `y` para el siguiente renglón
+
+doc.text(`Restante: $${cp.pedido.restante.toFixed(2)}`, margin, y); // Restante en su propio renglón
+y += 6; // Incrementa `y` para el siguiente renglón
+
+doc.text(`Hora de Entrega: ${cp.pedido.hora_entrega}`, margin, y); // Hora de Entrega en su propio renglón
+y += 6; // Incrementa `y` para el siguiente renglón
+
+doc.text(`Estado: ${cp.pedido.estado}`, margin, y); // Estado en su propio renglón
+y += 10; // Incrementa `y` para el espacio entre pedidos
+
 
                     doc.setDrawColor(200, 200, 200);
                     doc.line(margin, y, 200, y); // Línea divisoria
