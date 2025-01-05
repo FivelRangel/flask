@@ -18,20 +18,16 @@ class Cliente(db.Model):
 class Pedido(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cliente_id = db.Column(db.Integer, db.ForeignKey('cliente.id'), nullable=False)
-    menu = db.Column(db.String(20), nullable=False)
-    cantidad_personas = db.Column(db.Integer, nullable=False)
+    tipo_tamal = db.Column(db.String(50), nullable=False)  # Cambiado de `menu` a `tipo_tamal`
+    cantidad_tamales = db.Column(db.Integer, nullable=False)  # Cambiado de `cantidad_personas`
     total = db.Column(db.Float, nullable=False)
     estado = db.Column(db.String(20), default='Por entregar')
     hora_entrega = db.Column(db.String(50), nullable=False)
     anticipo = db.Column(db.Float, default=0.0, nullable=False)
     restante = db.Column(db.Float, nullable=False)
 
-# Precios de los menús
-PRECIOS_MENU = {
-    'Menú 1': 179,
-    'Menú 2': 189,
-    'Menú 3': 199
-}
+
+PRECIO_TAMAL = 15  # Precio por tamal en MXN
 
 # Ventas totales
 ventas_totales = 0
@@ -105,8 +101,8 @@ def obtener_clientes_y_pedidos():
             },
             "pedido": {
                 "id": pedido.id,
-                "menu": pedido.menu,
-                "cantidad_personas": pedido.cantidad_personas,
+                "tipo_tamal": pedido.tipo_tamal,  # Cambiado de `menu`
+                "cantidad_tamales": pedido.cantidad_tamales,  # Cambiado de `cantidad_personas`
                 "total": pedido.total,
                 "estado": pedido.estado,
                 "hora_entrega": pedido.hora_entrega,
@@ -116,6 +112,7 @@ def obtener_clientes_y_pedidos():
         })
 
     return jsonify(resultado), 200
+
 
 @app.route('/api/clientes/<int:id>', methods=['GET'])
 def obtener_cliente(id):
@@ -131,8 +128,8 @@ def obtener_cliente(id):
         },
         "pedidos": [ {
             "id": pedido.id,
-            "menu": pedido.menu,
-            "cantidad_personas": pedido.cantidad_personas,
+            "tipo_tamal": pedido.tipo_tamal,  # Cambiado de `menu`
+            "cantidad_tamales": pedido.cantidad_tamales,  # Cambiado de `cantidad_personas`
             "total": pedido.total,
             "estado": pedido.estado,
             "hora_entrega": pedido.hora_entrega,
@@ -140,6 +137,7 @@ def obtener_cliente(id):
             "restante": pedido.restante
         } for pedido in pedidos]
     }), 200
+
 
 @app.route('/api/clientes/<int:id>', methods=['PUT'])
 def actualizar_cliente_y_pedidos(id):
