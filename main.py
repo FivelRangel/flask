@@ -43,7 +43,7 @@ def registrar_cliente_y_pedido():
         print(f"Datos recibidos: {data}")
 
         # Validar datos requeridos
-        required_fields = ['nombre', 'telefono', 'direccion', 'menu', 'cantidadPersonas', 'horaEntrega']
+required_fields = ['nombre', 'telefono', 'direccion', 'tipoTamal', 'cantidadPersonas', 'horaEntrega']
         for field in required_fields:
             if field not in data:
                 error_message = f"Falta el campo requerido: {field}"
@@ -69,7 +69,7 @@ def registrar_cliente_y_pedido():
         # Crear pedido
         nuevo_pedido = Pedido(
             cliente_id=nuevo_cliente.id,
-            menu=data['menu'],
+            tipo_tamal=data['tipoTamal'],  # Usando el campo correcto
             cantidad_personas=data['cantidadPersonas'],
             total=total,
             hora_entrega=data['horaEntrega'],
