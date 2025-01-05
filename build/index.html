@@ -350,18 +350,19 @@ React.useEffect(() => {
                     y += 6;
                     doc.text(`Dirección: ${cp.cliente.direccion}`, margin, y);
                     y += 10;
-
-              doc.text(`Tipo de Tamal: ${cp.pedido.tipo_tamal}`, margin, y); // Actualizado
+                    doc.text(`Cantidad de Tamales: ${cp.pedido.cantidad_tamales}`, y); // Actualizado
                                         y += 6;
 
-        doc.text(`Cantidad de Tamales: ${cp.pedido.cantidad_tamales}`, margin + 50, y); // Actualizado
+                    doc.text(`Tipo de Tamal: ${cp.pedido.tipo_tamal}`, margin, y); // Actualizado
                                         y += 6;
 
         
-                    doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin + 100, y);
+
+        
+                    doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, y);
                     y += 6;
-                    doc.text(`Anticipo: $${cp.pedido.anticipo.toFixed(2)}`, margin, y);
-                    doc.text(`Restante: $${cp.pedido.restante.toFixed(2)}`, margin + 50, y);
+                    doc.text(`Anticipo: $${cp.pedido.anticipo.toFixed(2)}`, margin +50, y);
+                    doc.text(`Restante: $${cp.pedido.restante.toFixed(2)}`, margin + 100, y);
                     y += 6;
                     doc.text(`Hora de Entrega: ${cp.pedido.hora_entrega}`, margin, y);
                     doc.text(`Estado: ${cp.pedido.estado}`, margin + 70, y);
