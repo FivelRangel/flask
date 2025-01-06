@@ -405,7 +405,7 @@ doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin, y); // Agregada posici
     />
 </div>
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Menú</label>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Detalles (Escribe a mano)</label>
 <input
     className="shadow border rounded w-full py-2 px-3"
     id="tipoTamal"
@@ -416,7 +416,7 @@ doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin, y); // Agregada posici
 />
                             </div>
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadPersonas">Cantidad de Personas</label>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadPersonas">Cantidad de Tamales</label>
 <select className="shadow border rounded w-full py-2 px-3" id="cantidadPersonas" value={cantidadPersonas} onChange={(e) => setCantidadPersonas(Number(e.target.value))}>
     <option value={5}>5 Tamales</option>
     <option value={10}>10 Tamales</option>
