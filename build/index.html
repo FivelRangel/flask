@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Deliciosos Pedidos de Tortitas</title>
+    <title>Mis Deliciosos Pedidos</title>
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
@@ -30,6 +30,32 @@
             const [ventasTotales, setVentasTotales] = React.useState(0);
             const [clienteSeleccionado, setClienteSeleccionado] = React.useState(null);
             const inputRef = React.useRef(null); // Referencia para el campo de dirección
+
+            // Función para parsear y mostrar tipos de tortas de forma bonita
+            const parsearTiposTortas = (descripcion) => {
+                if (!descripcion) return [];
+                const tipos = descripcion.split(', ');
+                return tipos.map(tipo => {
+                    const match = tipo.match(/(\w+)\s*x(\d+)/);
+                    if (match) {
+                        return { nombre: match[1], cantidad: parseInt(match[2]) };
+                    }
+                    return { nombre: tipo, cantidad: 1 };
+                });
+            };
+
+            // Función para obtener el color del badge según el tipo
+            const getBadgeColor = (tipo) => {
+                const tipoLower = tipo.toLowerCase();
+                if (tipoLower.includes('jamón') || tipoLower.includes('jamon')) {
+                    return 'bg-orange-100 text-orange-800 border-orange-300';
+                } else if (tipoLower.includes('milanesa')) {
+                    return 'bg-yellow-100 text-yellow-800 border-yellow-300';
+                } else if (tipoLower.includes('arrachera')) {
+                    return 'bg-red-100 text-red-800 border-red-300';
+                }
+                return 'bg-gray-100 text-gray-800 border-gray-300';
+            };
 
             React.useEffect(() => {
                 fetchPedidos();
@@ -249,13 +275,13 @@ React.useEffect(() => {
         cliente.pedidos.forEach((pedido, index) => {
             const offsetY = 60 + index * 40; // Espaciado dinámico por cada pedido
             doc.text(`Pedido ${index + 1}`, 10, offsetY);
-            doc.text(`Cantidad de Tamales: ${pedido.cantidad_tamales}`, 20, offsetY + 20);
+            doc.text(`Cantidad de Tortas: ${pedido.cantidad_tamales}`, 20, offsetY + 20);
             doc.text(`Total: $${pedido.total.toFixed(2)}`, 20, offsetY + 30);
             doc.text(`Anticipo: $${pedido.anticipo.toFixed(2)}`, 20, offsetY + 40);
             doc.text(`Restante: $${pedido.restante.toFixed(2)}`, 20, offsetY + 50);
             doc.text(`Hora de Entrega: ${pedido.hora_entrega}`, 20, offsetY + 60);
             doc.text(`Estado: ${pedido.estado}`, 20, offsetY + 70);
-            doc.text(`Tipo de Tamal: ${pedido.tipo_tamal}`, 20, offsetY + 80);
+            doc.text(`Tipos de Tortas: ${pedido.tipo_tamal}`, 20, offsetY + 80);
 
         });
 
@@ -309,8 +335,17 @@ React.useEffect(() => {
                 <div className="space-y-6">
                     {cliente.pedidos.map((pedido, index) => (
                         <div key={index} className="bg-gray-100 p-4 rounded-lg shadow-sm space-y-2">
-                           <p className="text-gray-800"><strong>Tipo de Tamal:</strong> {pedido.tipo_tamal}</p>
-                            <p className="text-gray-800"><strong>Cantidad de Tamales:</strong> {pedido.cantidad_tamales}</p>
+                            <div className="mb-2">
+                                <strong className="text-gray-800 block mb-2">Tipos de Tortas:</strong>
+                                <div className="flex flex-wrap gap-2">
+                                    {parsearTiposTortas(pedido.tipo_tamal).map((tipo, idx) => (
+                                        <span key={idx} className={`px-3 py-1 rounded-full text-sm font-semibold border ${getBadgeColor(tipo.nombre)}`}>
+                                            {tipo.nombre} x{tipo.cantidad}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                            <p className="text-gray-800"><strong>Cantidad Total:</strong> {pedido.cantidad_tamales} tortas</p>
                             <p className="text-gray-800"><strong>Total:</strong> ${pedido.total.toFixed(2)}</p>
                             <p className="text-gray-800"><strong>Anticipo:</strong> ${pedido.anticipo.toFixed(2)}</p>
                             <p className="text-gray-800"><strong>Restante:</strong> ${pedido.restante.toFixed(2)}</p>
@@ -382,11 +417,11 @@ React.useEffect(() => {
                     y += 6;
                     doc.text(`Dirección: ${cp.cliente.direccion}`, margin, y);
                     y += 10;
-                    doc.text(`Cantidad de Tamales: ${cp.pedido.cantidad_tamales}`,  margin, y); // Actualizado
-                                        y += 6;
+                    doc.text(`Cantidad de Tortas: ${cp.pedido.cantidad_tamales}`,  margin, y);
+                    y += 6;
 
-                    doc.text(`Tipo de Tamal: ${cp.pedido.tipo_tamal}`, margin, y); // Actualizado
-                                        y += 6;
+                    doc.text(`Tipos de Tortas: ${cp.pedido.tipo_tamal}`, margin, y);
+                    y += 6;
 
         
 doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin, y); // Agregada posición correcta
@@ -505,8 +540,8 @@ doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin, y); // Agregada posici
                     <th className="px-4 py-2">Nombre</th>
                     <th className="px-4 py-2">Teléfono</th>
                     <th className="px-4 py-2">Dirección</th>
-                    <th className="px-4 py-2">Tipo de Tamal</th>
-<th className="px-4 py-2">Cantidad de Tamales</th>
+                    <th className="px-4 py-2">Tipos de Tortas</th>
+                    <th className="px-4 py-2">Cantidad Total</th>
                     <th className="px-4 py-2">Total</th>
                     <th className="px-4 py-2">Anticipo</th>
                     <th className="px-4 py-2">Restante</th>
@@ -544,8 +579,16 @@ doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin, y); // Agregada posici
         {cp.cliente.direccion}
     </a>
 </td>
-                        <td className="border px-4 py-2">{cp.pedido.tipo_tamal}</td>
-                        <td className="border px-4 py-2">{cp.pedido.cantidad_tamales}</td>
+                        <td className="border px-4 py-2">
+                            <div className="flex flex-wrap gap-2">
+                                {parsearTiposTortas(cp.pedido.tipo_tamal).map((tipo, idx) => (
+                                    <span key={idx} className={`px-2 py-1 rounded-full text-xs font-semibold border ${getBadgeColor(tipo.nombre)}`}>
+                                        {tipo.nombre} x{tipo.cantidad}
+                                    </span>
+                                ))}
+                            </div>
+                        </td>
+                        <td className="border px-4 py-2">{cp.pedido.cantidad_tamales} tortas</td>
                         <td className="border px-4 py-2">${cp.pedido.total.toFixed(2)}</td>
                         <td className="border px-4 py-2">${cp.pedido.anticipo.toFixed(2)}</td>
                         <td className="border px-4 py-2">${cp.pedido.restante.toFixed(2)}</td>
