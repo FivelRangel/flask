@@ -36,7 +36,7 @@
                 if (!descripcion) return [];
                 const tipos = descripcion.split(', ');
                 return tipos.map(tipo => {
-                    const match = tipo.match(/(\w+)\s*x(\d+)/);
+                    const match = tipo.match(/([\p{L}]+)\s*x(\d+)/u);
                     if (match) {
                         return { nombre: match[1], cantidad: parseInt(match[2]) };
                     }
