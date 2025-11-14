@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mis Deliciosos Pedidos</title>
+    <title>Mis Deliciosos Pedidos de Tortas</title>
     <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
     <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
@@ -21,8 +21,9 @@
             const [nombre, setNombre] = React.useState('');
             const [telefono, setTelefono] = React.useState('');
             const [direccion, setDireccion] = React.useState('');
-            const [tipoTamal, setTipoTamal] = React.useState('Tamal de Lomo'); // Cambiar `menu` a `tipoTamal`
-            const [cantidadPersonas, setCantidadPersonas] = React.useState(5);
+            const [cantidadJamon, setCantidadJamon] = React.useState(0);
+            const [cantidadMilanesa, setCantidadMilanesa] = React.useState(0);
+            const [cantidadArrachera, setCantidadArrachera] = React.useState(0);
             const [horaEntrega, setHoraEntrega] = React.useState('');
             const [anticipo, setAnticipo] = React.useState(0);
             const [clientesPedidos, setClientesPedidos] = React.useState([]);
@@ -99,28 +100,59 @@ React.useEffect(() => {
 
             const handleSubmit = async (e) => {
                 e.preventDefault();
+                
+                // Precios de las tortas
+                const precios = { 'Jamón': 30, 'Milanesa': 40, 'Arrachera': 50 };
+                
+                // Construir descripción y calcular total
+                let descripcionTortas = [];
+                let total = 0;
+                
+                if (cantidadJamon > 0) {
+                    descripcionTortas.push(`Jamón x${cantidadJamon}`);
+                    total += precios['Jamón'] * cantidadJamon;
+                }
+                if (cantidadMilanesa > 0) {
+                    descripcionTortas.push(`Milanesa x${cantidadMilanesa}`);
+                    total += precios['Milanesa'] * cantidadMilanesa;
+                }
+                if (cantidadArrachera > 0) {
+                    descripcionTortas.push(`Arrachera x${cantidadArrachera}`);
+                    total += precios['Arrachera'] * cantidadArrachera;
+                }
+                
+                // Validar que haya al menos una torta seleccionada
+                if (descripcionTortas.length === 0) {
+                    alert('Por favor selecciona al menos una torta');
+                    return;
+                }
+                
+                const tipoTortas = descripcionTortas.join(', ');
+                const cantidadTotal = cantidadJamon + cantidadMilanesa + cantidadArrachera;
+                
                 const response = await fetch('/api/clientes', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-    nombre,
-    telefono,
-    direccion,
-    tipoTamal, // Cambiar `menu` a `tipoTamal`
-    cantidadPersonas,
-    horaEntrega,
-    anticipo
-}),
-
+                        nombre,
+                        telefono,
+                        direccion,
+                        tipoTamal: tipoTortas,
+                        cantidadPersonas: cantidadTotal,
+                        horaEntrega,
+                        anticipo,
+                        total: total
+                    }),
                 });
                 if (response.ok) {
                     setNombre('');
                     setTelefono('');
                     setDireccion('');
-                    setTipoTamal('Tamal de Lomo'); // Correcto
-                    setCantidadPersonas(1);
+                    setCantidadJamon(0);
+                    setCantidadMilanesa(0);
+                    setCantidadArrachera(0);
                     setHoraEntrega('');
                     setAnticipo(0);
                     fetchPedidos();
@@ -378,7 +410,7 @@ doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin, y); // Agregada posici
 
             return (
                 <div className="container mx-auto p-4">
-                    <h1 className="text-3xl font-bold mb-6">Gestión de Pedidos de Luis y Oliver</h1>
+                    <h1 className="text-3xl font-bold mb-6">Mis Deliciosos Pedidos</h1>
                     
                     <div className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
                         <h2 className="text-2xl font-bold mb-4">Registrar Cliente y Pedido</h2>
@@ -405,25 +437,53 @@ doc.text(`Total: $${cp.pedido.total.toFixed(2)}`, margin, y); // Agregada posici
     />
 </div>
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="menu">Detalles (Escribe a mano)</label>
-<input
-    className="shadow border rounded w-full py-2 px-3"
-    id="tipoTamal"
-    type="text"
-    placeholder="Ingresa el tipo de tamal"
-    value={tipoTamal}
-    onChange={(e) => setTipoTamal(e.target.value)}
-/>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadJamon">Tortas de Jamón ($30 c/u)</label>
+                                <select className="shadow border rounded w-full py-2 px-3" id="cantidadJamon" value={cantidadJamon} onChange={(e) => setCantidadJamon(Number(e.target.value))}>
+                                    <option value={0}>0</option>
+                                    <option value={1}>1</option>
+                                    <option value={2}>2</option>
+                                    <option value={3}>3</option>
+                                    <option value={4}>4</option>
+                                    <option value={5}>5</option>
+                                    <option value={6}>6</option>
+                                    <option value={7}>7</option>
+                                    <option value={8}>8</option>
+                                    <option value={9}>9</option>
+                                    <option value={10}>10</option>
+                                </select>
                             </div>
                             <div>
-                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadPersonas">Cantidad de Tamales</label>
-<select className="shadow border rounded w-full py-2 px-3" id="cantidadPersonas" value={cantidadPersonas} onChange={(e) => setCantidadPersonas(Number(e.target.value))}>
-    <option value={5}>5 Tamales</option>
-    <option value={10}>10 Tamales</option>
-    <option value={15}>15 Tamales</option>
-    <option value={20}>20 Tamales</option>
-    <option value={30}>30 Tamales</option>
-</select>                            </div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadMilanesa">Tortas de Milanesa ($40 c/u)</label>
+                                <select className="shadow border rounded w-full py-2 px-3" id="cantidadMilanesa" value={cantidadMilanesa} onChange={(e) => setCantidadMilanesa(Number(e.target.value))}>
+                                    <option value={0}>0</option>
+                                    <option value={1}>1</option>
+                                    <option value={2}>2</option>
+                                    <option value={3}>3</option>
+                                    <option value={4}>4</option>
+                                    <option value={5}>5</option>
+                                    <option value={6}>6</option>
+                                    <option value={7}>7</option>
+                                    <option value={8}>8</option>
+                                    <option value={9}>9</option>
+                                    <option value={10}>10</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="cantidadArrachera">Tortas de Arrachera ($50 c/u)</label>
+                                <select className="shadow border rounded w-full py-2 px-3" id="cantidadArrachera" value={cantidadArrachera} onChange={(e) => setCantidadArrachera(Number(e.target.value))}>
+                                    <option value={0}>0</option>
+                                    <option value={1}>1</option>
+                                    <option value={2}>2</option>
+                                    <option value={3}>3</option>
+                                    <option value={4}>4</option>
+                                    <option value={5}>5</option>
+                                    <option value={6}>6</option>
+                                    <option value={7}>7</option>
+                                    <option value={8}>8</option>
+                                    <option value={9}>9</option>
+                                    <option value={10}>10</option>
+                                </select>
+                            </div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="horaEntrega">Hora de Entrega</label>
                                 <input className="shadow border rounded w-full py-2 px-3" id="horaEntrega" type="time" value={horaEntrega} onChange={(e) => setHoraEntrega(e.target.value)} required />
