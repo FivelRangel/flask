@@ -61,7 +61,7 @@ def registrar_cliente_y_pedido():
         print(f"Cliente creado con ID: {nuevo_cliente.id}")
 
         # Calcular total, anticipo y restante
-        total = PRECIO_TAMAL * data['cantidadPersonas']  # Usar precio unitario
+        total = data.get('total', PRECIO_TAMAL * data['cantidadPersonas'])  # Usar total del frontend si está disponible, sino calcular
         anticipo = data.get('anticipo', 0)
         restante = total - anticipo
         print(f"Total calculado: {total}, Anticipo: {anticipo}, Restante: {restante}")
